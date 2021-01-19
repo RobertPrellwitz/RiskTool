@@ -122,3 +122,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+RiskTool.sqlite
+
+migrations/versions/0001c8ac1a69_initial_version.py
+
+migrations/script.py.mako
+
+migrations/README.md
+
+migrations/env.py
+
+migrations/alembic.ini
