@@ -5,8 +5,8 @@ class Equity:
 
 class Option:
     def __init__(self, underlying, symbol, type, strike, expiration ):
-        self.underlying
-        self.symbol
-        self.type
-        self.strike
-        self.expiration
+        self.underlying = underlying
+        self.symbol = symbol
+        self.type = type
+        self.strike = strike
+        self.expiration = expiration
