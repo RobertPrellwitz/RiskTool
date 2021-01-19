@@ -5,7 +5,7 @@
 import os
 
 # Application settings
-APP_NAME = "Risk Manager Tool"
+APP_NAME = "Risk! The Individual Investors Secret Weapon"
 APP_SYSTEM_ERROR_SUBJECT_LINE = APP_NAME + " system error"
 
 # Flask settings
