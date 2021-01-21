@@ -1,11 +1,38 @@
 {% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
 
+{% block pre_content %}
+
+{% endblock %}
+
+
 {% block content %}
-    <h2>{%trans%}Members page{%endtrans%}</h2>
-    <p><a href={{ url_for('user.register') }}>{%trans%}Register{%endtrans%}</a></p>
-    <p><a href={{ url_for('user.login') }}>{%trans%}Sign in{%endtrans%}</a></p>
-    <p><a href={{ url_for('main.home_page') }}>{%trans%}Home Page{%endtrans%}</a> (accessible to anyone)</p>
-    <p><a href={{ url_for('main.member_page') }}>{%trans%}Member Page{%endtrans%}</a> (login_required: member@example.com / Password1)</p>
-    <p><a href={{ url_for('main.admin_page') }}>{%trans%}Admin Page{%endtrans%}</a> (roles_required: admin@example.com / Password1)</p>
-    <p><a href={{ url_for('user.logout') }}>{%trans%}Sign out{%endtrans%}</a></p>
+<table class="table table-responsive">
+  <thead>
+    <tr class="table-info">
+      <th scope="col">Security</th>
+        <th scope="col">Group</th>
+      <th scope="col">type</th>
+      <th scope="col">Underlying</th>
+      <th scope="col">Holding</th>
+        <th scope="col">Price</th>
+        <th scope="col">Delta</th>
+        <th scope="col">Exposure</th>
+        <th scope="col">Dollar Exposure</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-primary">
+        <th scope="row">Active</th>
+        <td>Rob</td>
+        <td>Prellwitz</td>
+        <td>Don't</td>
+        <td>Panic</td>
+        <td>The </td>
+        <td>Answer </td>
+        <td>is </td>
+        <td>42 !</td>
+
+    </tr>
+  </tbody>
+</table>
 {% endblock %}
