@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, current_app, request, ur
 from flask_user import current_user, login_required, roles_required
 from app import db
 from app.models.user_models import UserProfileForm
+from app.securities.holdings import Security_Data
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
@@ -58,14 +59,16 @@ def equity_page(equity_key):
 @main_blueprint.route('/holdings', methods=['GET', 'POST'])
 @login_required
 def holdings_page():
-    eqdb = current_app.config["eqdb"]
+    secdb = Security_Data()
+    data = secdb.get_holdings('currentholding.csv')
+    secdb = secdb.seed_holdings(data)
     if request.method == "GET":
-        equities = eqdb.get_equities()
-        return render_template("main/holdings.html", equities=equities)
+        securities = secdb.get_securities()
+        return render_template("main/holdings.html", securities=securities)
     else:
-        form_equity_keys = request.form.getlist("equity_keys")
-        for form_equity_key in form_equity_keys:
-            eqdb.delete_equity(int(form_equity_key))
+        form_security_keys = request.form.getlist("security_keys")
+        for form_security_key in form_security_keys:
+            secdb.delete_equity(int(form_security_key))
         return redirect(url_for("holdings_page"))
 
 @main_blueprint.route('/sample', methods=['GET', 'POST'])
