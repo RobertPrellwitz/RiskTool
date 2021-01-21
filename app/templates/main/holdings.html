@@ -1,0 +1,40 @@
+{% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
+
+{% block pre_content %}
+{% endblock %}
+
+
+{% block content %}
+<table class="table table-responsive">
+  <thead>
+    <tr class="table-info">
+      <th scope="col">Security</th>
+        <th scope="col">Group</th>
+      <th scope="col">type</th>
+      <th scope="col">Underlying</th>
+      <th scope="col">Holding</th>
+        <th scope="col">Price</th>
+        <th scope="col">Delta</th>
+        <th scope="col">Exposure</th>
+        <th scope="col">Dollar Exposure</th>
+    </tr>
+  </thead>
+
+      <tbody>
+      {%  for equity_key, equity in equities %}
+        <tr class="table-primary">
+            <th scope="row">{{  equity.ticker }}</th>
+            <td>{{ equity.name }}</td>
+            <td>Equity </td>
+            <td>{{ equity.name }}</td>
+            <td>{{ equity.shares }}</td>
+            <td> 10 </td>
+            <td> 1 </td>
+            <td>{ equity.shares * 1 }</td>
+            <td>$$$$$</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+
+</table>
+{% endblock %}
