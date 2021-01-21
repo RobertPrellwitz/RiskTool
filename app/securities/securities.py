@@ -21,6 +21,5 @@ class Security():
         self.underlying = underlying
         self.optiontype = optiontype
         self.position = position
-        self.type = type
         self.strike = strike
         self.expiration = expiration
