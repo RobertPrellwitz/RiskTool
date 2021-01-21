@@ -1,7 +1,5 @@
-from flask import Blueprint, redirect, render_template
-from flask import request, url_for
+from flask import Blueprint, redirect, render_template, current_app, request, url_for
 from flask_user import current_user, login_required, roles_required
-
 from app import db
 from app.models.user_models import UserProfileForm
 
@@ -12,6 +10,9 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates')
 def home_page():
     return render_template('main/home_page.html')
 
+@main_blueprint.route('/login', methods=['GET', 'POST'])
+def sign_in_page():
+    return render_template('main/user_login.html')
 
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')
@@ -47,5 +48,36 @@ def user_profile_page():
     # Process GET or invalid POST
     return render_template('main/user_profile_page.html',
                            form=form)
+@main_blueprint.route('/equity')
+@login_required
+def equity_page(equity_key):
+    eqdb = current_app.config["eqdb"]
+    equity = eqdb.get_equity(equity_key)
+    return render_template("equity.html", equity = equity)
 
+@main_blueprint.route('/holdings', methods=['GET', 'POST'])
+@login_required
+def holdings_page():
+    eqdb = current_app.config["eqdb"]
+    if request.method == "GET":
+        equities = eqdb.get_equities()
+        return render_template("main/holdings.html", equities=equities)
+    else:
+        form_equity_keys = request.form.getlist("equity_keys")
+        for form_equity_key in form_equity_keys:
+            eqdb.delete_equity(int(form_equity_key))
+        return redirect(url_for("holdings_page"))
+
+@main_blueprint.route('/sample', methods=['GET', 'POST'])
+@login_required
+def sample_page():
+    eqdb = current_app.config["eqdb"]
+    if request.method == "GET":
+        equities = eqdb.get_equities()
+        return render_template("main/sample.html", equities=equities)
+    else:
+        form_equity_keys = request.form.getlist("equity_keys")
+        for form_equity_key in form_equity_keys:
+            eqdb.delete_equity(int(form_equity_key))
+        return redirect(url_for("sample_page"))
 
