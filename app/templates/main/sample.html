@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Equity list{% endblock %}
+{% block content %}
+    <h1 class="title" style="color:SlateBlue">Equity Holdings</h1>
+
+
+<form action ="" method = "post" name = "equity_list">
+    <table class="table is-flex is-striped is-fullwidth is-align-content-center">
+        <div style="bgcolor:gray; color:SlateBlue">
+        <th >Ticker </th>
+        <th>Name </th>
+            <th>  Holdings  </th>
+        </div>
+      {% for equity_key, equity in equities %}
+      <tr>
+            <td>
+                <label class="checkbox">
+                    <input type = "checkbox" name = "equity_keys" value = "{{ equity_key }}"/>
+                </label>
+                <a>{{ equity.ticker }}</a>
+            </td>
+            <td> {{ equity.name }}</td>
+            <td>{{ equity.shares }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-danger is-small">Delete</button>
+        </div>
+      </div>
+
+</form>
+{% endblock %}
