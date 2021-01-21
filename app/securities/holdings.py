@@ -1,4 +1,4 @@
-from app.securities.securities import Equity
+from app.securities.securities import Equity, Security
 
 class Equity_Data:
     def __init__(self):
@@ -31,6 +31,38 @@ class Equity_Data:
             equity_ = Equity(equity.name, equity.ticker, equity.shares)
             equities.append((equity_key, equity_))
         return equities
+
+class Security_Data:
+    def __init__(self):
+        self.securities = {}
+        self._securities_key =0
+
+
+    def add_security(self, security):
+        self._securities_key += 1
+        self.securities[self._securities_key] = security
+        return self._securities_key
+
+    def update_security(self, security_key, security):
+        self.securities[security_key] = security
+
+    def get_security(self, security_key):
+        security = self.securities.get(security_key)
+        if security is None:
+            return None
+        security_ = Security(security.name, security.ticker)
+        return security_
+
+    def delete_security(self, security_key):
+        if security_key in self.securities:
+            del self.securities[security_key]
+
+    def get_securities(self):
+        securities = []
+        for security_key, security in self.securities.items():
+            security_ = Security(security.name, security.ticker, security.shares)
+            securities.append((security_key, security_))
+        return securities
 
 
 
