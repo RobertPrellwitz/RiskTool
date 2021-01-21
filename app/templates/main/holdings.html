@@ -9,28 +9,28 @@
   <thead>
     <tr class="table-info">
       <th scope="col">Security</th>
-        <th scope="col">Group</th>
-      <th scope="col">type</th>
-      <th scope="col">Underlying</th>
+        <th scope="col">Security Type</th>
+      <th scope="col">Underlying Ticker</th>
+      <th scope="col">Option Tupe</th>
       <th scope="col">Holding</th>
-        <th scope="col">Price</th>
-        <th scope="col">Delta</th>
+        <th scope="col">Strike</th>
+        <th scope="col">Expiration</th>
         <th scope="col">Exposure</th>
         <th scope="col">Dollar Exposure</th>
     </tr>
   </thead>
 
       <tbody>
-      {%  for equity_key, equity in equities %}
-        <tr class="table-primary">
-            <th scope="row">{{  equity.ticker }}</th>
-            <td>{{ equity.name }}</td>
-            <td>Equity </td>
-            <td>{{ equity.name }}</td>
-            <td>{{ equity.shares }}</td>
-            <td> 10 </td>
-            <td> 1 </td>
-            <td>{ equity.shares * 1 }</td>
+      {%  for security_key, security in securities %}
+        <tr class="table-primary" style="font-size:13px">
+            <th scope="row">{{  security.symbol }}</th>
+            <td>{{ security.type }}</td>
+            <td>{{ security.underlying }} </td>
+            <td>{{ security.optiontype }}</td>
+            <td>{{ security.position }}</td>
+            <td>{{security.strike}}</td>
+            <td> {{ security.expiration }} </td>
+            <td>{ security.position * 1 }</td>
             <td>$$$$$</td>
         </tr>
       {% endfor %}
