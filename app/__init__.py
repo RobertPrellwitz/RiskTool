@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
-
+from app.securities.holdings import Equity_Data
+from app.securities.securities import Equity
 from flask import Flask
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
@@ -41,6 +42,16 @@ def create_app(extra_config_settings={}):
 
     # Setup WTForms CSRFProtect
     csrf_protect.init_app(app)
+
+    # Setup Equity Samlpe Data
+    eqdb = Equity_Data()
+    eqdb.add_equity(Equity("AAPL", "Apple Inc.", 100))
+    eqdb.add_equity(Equity("AMD", "AMD Inc.", 250))
+    eqdb.add_equity(Equity("F", "Ford Motor Corp.", 2500))
+    eqdb.add_equity(Equity("SPCE", "Virgin Galactic Inc.", 1000))
+    eqdb.add_equity(Equity("WFC", "Wells Fargo Inc", 2500))
+    eqdb.add_equity(Equity("XOM", "Exxon Mobile Inc.", 750))
+    app.config["eqdb"] = eqdb
 
     # Register blueprints
     from .views import register_blueprints
