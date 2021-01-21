@@ -13,3 +13,14 @@ class Option():
         self.type = type
         self.strike = strike
         self.expiration = expiration
+
+class Security():
+    def __init__(self, symbol, type, underlying, optiontype, position, strike, expiration ):
+        self.symbol = symbol
+        self.type = type
+        self.underlying = underlying
+        self.optiontype = optiontype
+        self.position = position
+        self.type = type
+        self.strike = strike
+        self.expiration = expiration
