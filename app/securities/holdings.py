@@ -1,5 +1,8 @@
 import pandas
 from app.securities.securities import Equity, Security
+from wallstreet import Stock, Call, Put
+from datetime import datetime
+
 
 class Equity_Data:
     def __init__(self):
@@ -60,15 +63,53 @@ class Security_Data:
     def get_securities(self):
         securities = []
         for security_key, security in self.securities.items():
-            security_ = Security(security.symbol, security.type, security.underlying, security.optiontype, security.position, security.strike, security.expiration)
+            security_ = Security(security.symbol, security.type, security.underlying, security.optiontype, security.position, security.strike, security.expiration, security.price, security.delta)
             securities.append((security_key, security_))
         return securities
 
     def get_holdings(self, csv):
-        df = pandas.read_csv(csv, engine='python', header=6, skipfooter=4)
-        # df = pandas.read_csv(csv)
-        tup = df.to_numpy()
-        return tup
+        # df = pandas.read_csv(csv, engine='python', header=6, skipfooter=4)
+        df = pandas.read_csv(csv)
+        #tup = df.to_numpy()
+        return df
+
+    def get_data(self, df):
+        tup = df.shape
+        x = tup[0]
+        y = tup[1]
+        prices =[]
+        deltas =[]
+        for i in range(x):
+            if df.iloc[i, 1] == "Equity":
+                price = Stock(df.iloc[i, 0]).price
+                delta = 1
+                df.iloc[i, 2] = df.iloc[i, 0]
+
+            elif df.iloc[i, 3]=="CALL":
+                ticker = df.iloc[i,2] ; strike = float(df.iloc[i,5])
+                date = datetime.strptime(df.iloc[i,6], '%m/%d/%Y')
+                month = date.month ; day = date.day ; year = date.year
+                call = Call(ticker, day, month, year, strike)
+                price = call.price
+                delta = call.delta()
+
+            elif df.iloc[i, 3]=="PUT":
+                ticker = df.iloc[i, 2]; strike = float(df.iloc[i, 5])
+                date = datetime.strptime(df.iloc[i, 6], '%m/%d/%Y')
+                month = date.month; day = date.day; year = date.year
+                put = Put(ticker, day, month, year, strike)
+                price = put.price
+                delta = put.delta()
+
+            else:
+                price = 0
+            prices.append(price)
+            deltas.append(delta)
+            print(prices, deltas)
+
+        df["Prices"] = prices
+        df["Deltas"] = deltas
+        return df
 
     def seed_holdings(self, holdings):
         secdb = Security_Data()
@@ -80,7 +121,9 @@ class Security_Data:
             position = item[4]
             strike = item[5]
             expiration = item[6]
-            secdb.add_security(Security(symbol, sectype, underlying, optiontype, position, strike, expiration))
+            price = item[7]
+            delta = item[8]
+            secdb.add_security(Security(symbol, sectype, underlying, optiontype, position, strike, expiration, price, delta))
         return secdb
 
 
