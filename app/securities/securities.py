@@ -15,7 +15,7 @@ class Option():
         self.expiration = expiration
 
 class Security():
-    def __init__(self, symbol, type, underlying, optiontype, position, strike, expiration ):
+    def __init__(self, symbol, type, underlying, optiontype, position, strike, expiration, price, delta):
         self.symbol = symbol
         self.type = type
         self.underlying = underlying
@@ -23,3 +23,5 @@ class Security():
         self.position = position
         self.strike = strike
         self.expiration = expiration
+        self.price = price
+        self.delta = delta
