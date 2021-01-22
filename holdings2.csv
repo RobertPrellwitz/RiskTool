@@ -1,0 +1,17 @@
+Symbol,Type,Underlier,OptionType,Quantity,Price,Expiration
+AAPL Feb 12 '21 $135 Call,Option,AAPL,CALL,10,135,2/12/2021
+AMC,Equity,--,--,1000,--,--
+AMD Jan 22 '21 $100 Call,Option,AMD,CALL,50,100,1/22/2021
+F,Equity,--,--,2000,--,--
+F Jan 22 '21 $10 Call,Option,F,CALL,25,10,1/22/2021
+FSR,Equity,--,--,500,--,--
+GE,Equity,--,--,2000,--,--
+GOOG,Equity,--,--,30,--,--
+GOOG Jan 29 '21 $1850 Call,Option,GOOG,CALL,1,1850,1/29/2021
+GOOG Jan 29 '21 $1900 Call,Option,GOOG,CALL,-1,1900,1/29/2021
+IBM,Equity,--,--,500,--,--
+IBM Feb 19 '21 $135 Call,Option,IBM,CALL,10,135,2/19/2021
+INTC,Equity,--,--,500,--,--
+INTC Feb 19 '21 $60 Call,Option,INTC,CALL,10,60,2/19/2021
+INTC Feb 19 '21 $67.50 Call,Option,INTC,CALL,-5,67.5,2/19/2021
+IPOE,Equity,--,--,1000,--,--
