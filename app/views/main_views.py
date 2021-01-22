@@ -3,6 +3,7 @@ from flask_user import current_user, login_required, roles_required
 from app import db
 from app.models.user_models import UserProfileForm
 from app.securities.holdings import Security_Data
+import pandas
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
@@ -60,8 +61,10 @@ def equity_page(equity_key):
 @login_required
 def holdings_page():
     secdb = Security_Data()
-    data = secdb.get_holdings('currentholding.csv')
-    secdb = secdb.seed_holdings(data)
+    holdings = secdb.get_holdings('holdings2.csv')
+    data = secdb.get_data(holdings)
+    dataII = data.to_numpy()
+    secdb = secdb.seed_holdings(dataII)
     if request.method == "GET":
         securities = secdb.get_securities()
         return render_template("main/holdings.html", securities=securities)
