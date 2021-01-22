@@ -1,6 +1,6 @@
 from datetime import datetime
 import os
-from app.securities.holdings import Equity_Data
+from app.securities.holdings import Equity_Data, Security_Data
 from app.securities.securities import Equity
 from flask import Flask
 from flask_script import Manager
@@ -52,6 +52,8 @@ def create_app(extra_config_settings={}):
     eqdb.add_equity(Equity("WFC", "Wells Fargo Inc", 2500))
     eqdb.add_equity(Equity("XOM", "Exxon Mobile Inc.", 750))
     app.config["eqdb"] = eqdb
+
+
 
     # Register blueprints
     from .views import register_blueprints
