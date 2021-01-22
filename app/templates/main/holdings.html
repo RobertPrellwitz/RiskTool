@@ -15,8 +15,8 @@
       <th scope="col">Holding</th>
         <th scope="col">Strike</th>
         <th scope="col">Expiration</th>
-        <th scope="col">Exposure</th>
-        <th scope="col">Dollar Exposure</th>
+        <th scope="col">Price</th>
+        <th scope="col">Delta</th>
     </tr>
   </thead>
 
@@ -29,9 +29,9 @@
             <td>{{ security.optiontype }}</td>
             <td>{{ security.position }}</td>
             <td>{{security.strike}}</td>
-            <td> {{ security.expiration }} </td>
-            <td>{ security.position * 1 }</td>
-            <td>$$$$$</td>
+            <td>{{ security.expiration }}</td>
+            <td>$  {{ security.price }}</td>
+            <td>{{ security.delta }} %</td>
         </tr>
       {% endfor %}
       </tbody>
