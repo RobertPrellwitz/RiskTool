@@ -3,6 +3,7 @@ from flask_user import current_user, login_required, roles_required
 from app import db
 from app.models.user_models import UserProfileForm
 from app.securities.holdings import Security_Data
+from app.securities import data
 import pandas
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
@@ -12,9 +13,11 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates')
 def home_page():
     return render_template('main/home_page.html')
 
+
 @main_blueprint.route('/login', methods=['GET', 'POST'])
 def sign_in_page():
     return render_template('main/user_login.html')
+
 
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')
@@ -74,6 +77,7 @@ def holdings_page():
             secdb.delete_equity(int(form_security_key))
         return redirect(url_for("holdings_page"))
 
+
 @main_blueprint.route('/sample', methods=['GET', 'POST'])
 @login_required
 def sample_page():
@@ -87,3 +91,14 @@ def sample_page():
             eqdb.delete_equity(int(form_equity_key))
         return redirect(url_for("sample_page"))
 
+
+@main_blueprint.route('/Portfolio', methods=['GET', 'POST'])
+@login_required
+def portfolio_page():
+    if request.method == "GET":
+        csv = "currentholding.csv"
+        holdings = data.get_holdings(csv)
+        return render_template("main/portfolio.html", tables=[holdings.to_html(classes='data', header=True)])
+
+    else:
+        return redirect(url_for("main/home_page.html"))
