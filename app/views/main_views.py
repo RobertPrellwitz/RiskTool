@@ -3,7 +3,7 @@ from flask_user import current_user, login_required, roles_required
 from app import db
 from app.models.user_models import UserProfileForm
 from app.securities.holdings import Security_Data
-from app.securities import data
+from app.securities.data import Position
 import pandas
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
@@ -96,8 +96,8 @@ def sample_page():
 @login_required
 def portfolio_page():
     if request.method == "GET":
-        csv = "currentholding.csv"
-        holdings = data.get_holdings(csv)
+        position = Position()
+        holdings = position.get_holdings()
         return render_template("main/portfolio.html", tables=[holdings.to_html(classes='data', header=True)])
 
     else:
