@@ -98,7 +98,7 @@ def portfolio_page():
     if request.method == "GET":
         position = Position()
         holdings = position.get_holdings()
-        return render_template("main/portfolio.html", tables=[holdings.to_html(classes='data', header=True)])
-
+        # return render_template("main/portfolio.html", tables=[holdings.to_html(classes='data', header=True)])
+        return render_template("main/portfolio.html", column_names=holdings.columns.values, row_data=list(holdings.values.tolist()),link_column='Option Underlier', zip=zip)
     else:
         return redirect(url_for("main/home_page.html"))
