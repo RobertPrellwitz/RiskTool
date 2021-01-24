@@ -97,9 +97,15 @@ def sample_page():
 def portfolio_page():
     if request.method == "GET":
         position = Position()
-        holdings = position.get_holdings()
-        return render_template("main/portfolio.html", tables=[holdings.to_html(classes='table table-dark', header=True, index=False)])
-        # return render_template("main/portfolio.html", column_names=holdings.columns.values, row_data=list(holdings.values.tolist()),link_column='Option Underlier', zip=zip)
+        csv = "currentholding.csv"
+        holdings = position.get_holdings(csv)
+        return render_template("main/portfolio.html", tables=[
+            holdings.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                            columns=['Symbol', 'Option Underlier',
+                                     'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                     'Option Delta', 'Exposure'],
+                            formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                        "Exposure": "{:,.0f}".format})])
     else:
         return redirect(url_for("main/home_page.html"))
 
@@ -108,8 +114,21 @@ def portfolio_page():
 def group_page():
     if request.method == "GET":
         position = Position()
-        holdings = position.get_holdings()
-        # return render_template("main/portfolio.html", tables=[holdings.to_html(classes='data', header=True)])
+        csv = "currentholding.csv"
+        holdings = position.get_holdings(csv)
         return render_template("main/group.html", column_names=holdings.columns.values, row_data=list(holdings.values.tolist()),link_column='Option Underlier', zip=zip)
+    else:
+        return redirect(url_for("main/home_page.html"))
+
+@main_blueprint.route('/Sample2', methods=['GET', 'POST'])
+@login_required
+def sample2_page():
+    if request.method == "GET":
+        position = Position()
+        csv = "holdings2.csv"
+        sample2 = position.get_holdings(csv)
+        return render_template("main/sample2.html", tables=[sample2.to_html(header=True, index=False,na_rep="--" , table_id="Portfolio",columns=['Symbol','Option Underlier',
+                 'Option Type','Quantity','Strike Price','Expiration Date','Market Price', 'Option Delta', 'Exposure'],
+                    formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,"Exposure" : "{:,.0f}".format})])
     else:
         return redirect(url_for("main/home_page.html"))

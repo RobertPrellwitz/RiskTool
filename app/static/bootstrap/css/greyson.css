@@ -613,6 +613,28 @@ pre {
   .table-dark.table-hover tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.075); }
 
+table.dataframe, .dataframe th{
+  border-bottom: 3px solid #C8C8C8;
+  padding: 12px;
+  font-size: 14px;
+  text-align:center;
+  background-color: #1b4f72;
+  color: #a4e7d6;
+     }
+   .dataframe td {
+     color: #0a0a0a;
+  border: none;
+  border-bottom: 3px solid #C8C8C8;
+  border-collapse: collapse;
+  text-align:center;
+  padding: 10px;
+  margin-bottom: 40px;
+  font-size: 12px;
+}
+tr:nth-child(even)	{ background-color: #919ca6; }
+tr:nth-child(odd)	{ background-color: #7b7c7b; }
+tr:hover            { background-color: #ffff99;}
+
 @media (max-width: 575.98px) {
   .table-responsive-sm {
     display: block;
@@ -661,6 +683,9 @@ pre {
   -ms-overflow-style: -ms-autohiding-scrollbar; }
   .table-responsive > .table-bordered {
     border: 0; }
+
+
+
 
 .form-control {
   display: block;

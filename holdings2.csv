@@ -1,17 +1,23 @@
-Symbol,Type,Underlier,OptionType,Quantity,Price,Expiration
-AAPL Feb 12 '21 $135 Call,Option,AAPL,CALL,10,135,2/12/2021
-AMC,Equity,--,--,1000,--,--
-AMD Jan 22 '21 $100 Call,Option,AMD,CALL,50,100,1/22/2021
-F,Equity,--,--,2000,--,--
-F Jan 22 '21 $10 Call,Option,F,CALL,25,10,1/22/2021
-FSR,Equity,--,--,500,--,--
-GE,Equity,--,--,2000,--,--
-GOOG,Equity,--,--,30,--,--
-GOOG Jan 29 '21 $1850 Call,Option,GOOG,CALL,1,1850,1/29/2021
-GOOG Jan 29 '21 $1900 Call,Option,GOOG,CALL,-1,1900,1/29/2021
-IBM,Equity,--,--,500,--,--
-IBM Feb 19 '21 $135 Call,Option,IBM,CALL,10,135,2/19/2021
-INTC,Equity,--,--,500,--,--
-INTC Feb 19 '21 $60 Call,Option,INTC,CALL,10,60,2/19/2021
-INTC Feb 19 '21 $67.50 Call,Option,INTC,CALL,-5,67.5,2/19/2021
-IPOE,Equity,--,--,1000,--,--
+Account Summary,,,,,,,,,
+Account,Net Account Value,Total Gain $,Total Gain %,Day's Gain Unrealized $,Day's Gain Unrealized %,Day's Gain Realized $,Available For Withdrawal,Intraday Marginable Securities,Intraday Non-Marginable Securities
+trading -7438,557897.93,24956.38,4.8,10460.49,2.13,6049.83,286493.46,1203876.09,300969.02
+,,,,,,,,,
+,,,,,,,,,
+View Summary - Holding,,,,,,,,,
+Symbol,Type,Option Underlier,Option Type,Quantity,Strike Price,Expiration Date,,,
+AAPL Feb 12 '21 $135 Call,Option,AAPL,CALL,8,135,2/12/2021,,,
+AAPL Mar 19 '21 $142.50 Call,Option,AAPL,CALL,15,142.5,3/19/2021,,,
+AAPL Mar 19 '21 $155 Call,Option,AAPL,CALL,-15,155,3/19/2021,,,
+F,Equity,--,--,2000,--,--,,,
+F Feb 05 '21 $12 Call,Option,F,CALL,30,12,2/5/2021,,,
+F Feb 12 '21 $12 Call,Option,F,CALL,30,12,2/12/2021,,,
+QQQ Jan 29 '21 $325 Call,Option,QQQ,CALL,30,325,1/29/2021,,,
+QQQ Jan 29 '21 $330 Call,Option,QQQ,CALL,-15,330,1/29/2021,,,
+QQQ Jan 29 '21 $310 Put,Option,QQQ,PUT,40,310,1/29/2021,,,
+SPCE,Equity,--,--,1000,--,--,,,
+SPCE Feb 12 '21 $35 Call,Option,SPCE,CALL,13,35,2/12/2021,,,
+
+CASH,,,,,,57278.31,,,
+,,,,,,,,,
+,,,,,,,,,
+Generated at Jan 21 2021 11:32 AM ET,,,,,,,,,

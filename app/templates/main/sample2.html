@@ -1,0 +1,22 @@
+{% extends "main/main_base.html" %}
+
+{% block pre_content %}
+{% endblock %}
+
+{% block content %}
+    <div style="align-content: stretch">
+    <H2 style="align-content: center; color: dodgerblue"> Sample Position Data </H2>
+    </div>
+{#    {% for page in pages %}#}
+{#        {{ page|safe }}#}
+{#    {% endfor %}#}
+
+    <table>
+        {% for table in tables %}
+            <h4></h4>
+        {{ table|safe }}
+        {% endfor %}
+    </table>
+
+
+{% endblock %}

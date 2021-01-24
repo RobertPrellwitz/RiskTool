@@ -7,8 +7,7 @@ from datetime import datetime
 
 class Position:
 
-    def get_holdings(self):
-        csv = "currentholding.csv"
+    def get_holdings(self, csv):
         df = pandas.read_csv(csv, engine='python', header=6, skipfooter=4)
         df.drop(df.filter(regex="Unnamed"), axis=1, inplace=True)
         df["Option Underlier"] = df.apply(lambda x: self.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
@@ -24,8 +23,6 @@ class Position:
                                 x['Month'],
                                 x['Year'], x['Strike Price'])), axis=1)
         df['Exposure'] = df.apply(lambda x: self.share_exp(x['Type'], x['Quantity'], x['Option Delta']), axis=1)
-        # df.style.hidden_columns(['Month', 'Day', 'Year'])
-        #df.style.format({'Expiration Date':'{%m/%d/%Y}', 'Option Delta':'{:.2%}','Exposure':'{:0<4.0f}'})
         return df
 
     def delta_call(self, S, K, T, r, sigma):
@@ -115,4 +112,11 @@ class Position:
             exp = quantity * delta * 100
         return exp
 
-
+    def color_negative_red(self, val):
+        """
+        Takes a scalar and returns a string with
+        the css property `'color: red'` for negative
+        strings, black otherwise.
+        """
+        color = 'red' if val < 0 else 'white'
+        return 'color: %s' % color

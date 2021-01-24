@@ -9,7 +9,7 @@
         <title>Don't Panic !</title>
         <!-- Bootstrap CSS and JS -->
 {#        <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">#}
-        <link href="{{ url_for('static', filename='bootstrap/css/greyson.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='bootstrap/css/slate.css') }}" rel="stylesheet">
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -37,7 +37,7 @@
                     <a class="nav-link" href={{ url_for('user.login') }}>Sign In</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.sample_page')}}">Sample View</a>
+                    <a class="nav-link" href="{{ url_for('main.sample2_page')}}">Sample View</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{{  url_for('main.holdings_page') }}">Holdings</a>
@@ -116,6 +116,7 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
         </script>
         -->
+        </div>
         {% endblock %}
     </body>
 </html>
