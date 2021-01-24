@@ -24,6 +24,8 @@ class Position:
                                 x['Month'],
                                 x['Year'], x['Strike Price'])), axis=1)
         df['Exposure'] = df.apply(lambda x: self.share_exp(x['Type'], x['Quantity'], x['Option Delta']), axis=1)
+        # df.style.hidden_columns(['Month', 'Day', 'Year'])
+        #df.style.format({'Expiration Date':'{%m/%d/%Y}', 'Option Delta':'{:.2%}','Exposure':'{:0<4.0f}'})
         return df
 
     def delta_call(self, S, K, T, r, sigma):

@@ -4,32 +4,34 @@
 {% endblock %}
 
 {% block content %}
-
-    <div class=page-item>
-        <H3> Positions </H3>
+<H2> Positions </H2>
     <table>
-        <tr>
-            {% for col in column_names %}
-            <th>{{ col }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in row_data %}
-        <tr>
-            {% for col, row_ in zip(column_names, row) %}
-            {% if col == link_column %}
-            <td>
-                <button type="submit" value={{ row_ }}>{{ row_ }}</button>
-            </td>
-            {% else %}
-            <td>{{ row_ }}</td>
-            {% endif %}
-            {% endfor %}
-        </tr>
+        {% for table in tables %}
+            <h4></h4>
+        {{ table|safe }}
         {% endfor %}
     </table>
 
 
-    </div>
-
-
 {% endblock %}
+
+<!--    <table>-->
+<!--        <tr>-->
+<!--            {% for col in column_names %}-->
+<!--            <th style=" text-align:center">{{ col }}</th>-->
+<!--            {% endfor %}-->
+<!--        </tr>-->
+<!--        {% for row in row_data %}-->
+<!--        <tr style="text-align:center">-->
+<!--            {% for col, row_ in zip(column_names, row) %}-->
+<!--            {% if col == link_column %}-->
+<!--            <td>-->
+<!--                <a href="{{url_for('main.group_page')}}">{{ row_ }}</a>-->
+<!--            </td>-->
+<!--            {% else %}-->
+<!--            <td>{{ row_ }}</td>-->
+<!--            {% endif %}-->
+<!--            {% endfor %}-->
+<!--        </tr>-->
+<!--        {% endfor %}-->
+<!--    </table>-->

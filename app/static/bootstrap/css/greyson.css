@@ -484,7 +484,7 @@ pre {
   border: 0; }
 
 .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.05); }
+  background-color: rgba(206, 213, 255, 0.75); }
 
 .table-hover tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.075); }
@@ -569,7 +569,8 @@ pre {
 .table-dark,
 .table-dark > th,
 .table-dark > td {
-  background-color: #c0c4c7; }
+  background-color: #c0c4c7;
+  text-align: center }
 
 .table-hover .table-dark:hover {
   background-color: #b3b7bb; }
