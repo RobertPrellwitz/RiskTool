@@ -78,27 +78,14 @@ def holdings_page():
         return redirect(url_for("holdings_page"))
 
 
-@main_blueprint.route('/sample', methods=['GET', 'POST'])
-@login_required
-def sample_page():
-    eqdb = current_app.config["eqdb"]
-    if request.method == "GET":
-        equities = eqdb.get_equities()
-        return render_template("main/sample.html", equities=equities)
-    else:
-        form_equity_keys = request.form.getlist("equity_keys")
-        for form_equity_key in form_equity_keys:
-            eqdb.delete_equity(int(form_equity_key))
-        return redirect(url_for("sample_page"))
-
-
 @main_blueprint.route('/Portfolio', methods=['GET', 'POST'])
 @login_required
 def portfolio_page():
     if request.method == "GET":
         position = Position()
         csv = "currentholding.csv"
-        holdings = position.get_holdings(csv)
+        df = position.get_data_from_file(csv)
+        holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
             holdings.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
                             columns=['Symbol', 'Option Underlier',
@@ -114,9 +101,32 @@ def portfolio_page():
 def group_page():
     if request.method == "GET":
         position = Position()
+        ticker = "F"
         csv = "currentholding.csv"
-        holdings = position.get_holdings(csv)
-        return render_template("main/group.html", column_names=holdings.columns.values, row_data=list(holdings.values.tolist()),link_column='Option Underlier', zip=zip)
+        df = position.get_data_from_file(csv)
+        group = position.filter_holdings(df, ticker)
+        group = position.get_holdings(group)
+        return render_template("main/group.html", tables=[
+            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                             columns=['Symbol', 'Option Underlier',
+                                      'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                      'Option Delta', 'Exposure'],
+                             formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                         "Exposure": "{:,.0f}".format})])
+    elif request.method == "POST":
+        position = Position()
+        ticker = request.form.get('ticker')
+        csv = "currentholding.csv"
+        df = position.get_data_from_file(csv)
+        group = position.filter_holdings(df, ticker)
+        group = position.get_holdings(group)
+        return render_template("main/group.html", tables=[
+            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})])
     else:
         return redirect(url_for("main/home_page.html"))
 
@@ -126,7 +136,8 @@ def sample2_page():
     if request.method == "GET":
         position = Position()
         csv = "holdings2.csv"
-        sample2 = position.get_holdings(csv)
+        df = position.get_data_from_file(csv)
+        sample2 = position.get_holdings(df)
         return render_template("main/sample2.html", tables=[sample2.to_html(header=True, index=False,na_rep="--" , table_id="Portfolio",columns=['Symbol','Option Underlier',
                  'Option Type','Quantity','Strike Price','Expiration Date','Market Price', 'Option Delta', 'Exposure'],
                     formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,"Exposure" : "{:,.0f}".format})])

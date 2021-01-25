@@ -39,15 +39,16 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('main.sample2_page')}}">Sample View</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{  url_for('main.holdings_page') }}">Holdings</a>
-                  </li>
+
                   <li class="nav-item">
                     <a class="nav-link" href="{{  url_for('main.portfolio_page') }}">Portfolio</a>
-                  </li>
-                  <li class="nav-item">
+                    <li class="nav-item">
                     <a class="nav-link" href="#">About</a>
                   </li>
+                    <form class="form-inline my-2 my-lg-0" action="/Group" method="post">
+                      <input class="form-control mr-sm-2" type="text" placeholder="ticker">
+                      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                    </form>
                 </ul>
             </div>
              <div class="pull-right" align="right">
@@ -94,9 +95,13 @@
         </div>
 
             <!-- Application specific HTML -->
-        <div id="header-div" class="jumbotron" align="center">
-            <div class="align-content-center"><a href="/"><h1 class="no-margins">Don't Panic !nc.</h1></a></div>
-        </div>
+        <div class="card border-light mb-3" style="max-width: 20rem;">
+  <div class="card-header">Don't Pan!c Inc.</div>
+  <div class="card-body">
+    <h4 class="card-title">Contact Info</h4>
+    <p class="card-text">repprisk@gmail.com</p>
+  </div>
+</div>
         <hr class="no-margins"/>
 
         <div id="main-div" class="with-margins">

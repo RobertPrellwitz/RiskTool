@@ -7,9 +7,12 @@ from datetime import datetime
 
 class Position:
 
-    def get_holdings(self, csv):
+    def get_data_from_file(self, csv):
         df = pandas.read_csv(csv, engine='python', header=6, skipfooter=4)
         df.drop(df.filter(regex="Unnamed"), axis=1, inplace=True)
+        return df
+
+    def get_holdings(self, df):
         df["Option Underlier"] = df.apply(lambda x: self.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
@@ -112,11 +115,7 @@ class Position:
             exp = quantity * delta * 100
         return exp
 
-    def color_negative_red(self, val):
-        """
-        Takes a scalar and returns a string with
-        the css property `'color: red'` for negative
-        strings, black otherwise.
-        """
-        color = 'red' if val < 0 else 'white'
-        return 'color: %s' % color
+    def filter_holdings(self, df, ticker):
+        filter = df['Option Underlier'] == ticker
+        position = df[filter]
+        return position

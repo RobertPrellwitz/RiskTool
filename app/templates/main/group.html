@@ -1,8 +1,25 @@
-% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
+{% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
 
-<h2 class ="title"> Group</h2>
+{% block pre_content %}
+    <div>
+     <form class="form-inline my-2 my-lg-0" action="/Group" method="POST">
+      <input class="form-control mr-sm-2" id="group" type="text" placeholder="AAPL">
+      <button class="btn btn-info my-2 my-sm-0" type="submit" value="Submit">Ticker ( Group )</button>
+    </form>
+    </div>
 
-<table class="table">
 
 
-</table>
+{% endblock %}
+
+{% block content %}
+<H2>  Group  </H2>
+    <table id="Portfolio">
+        {% for table in tables %}
+            <h4></h4>
+        {{ table|safe }}
+        {% endfor %}
+    </table>
+{% endblock %}
+
+

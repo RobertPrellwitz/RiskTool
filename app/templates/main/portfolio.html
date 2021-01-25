@@ -1,7 +1,30 @@
 {% extends "main/main_base.html" %}
 
 {% block pre_content %}
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="nav-link" href="{{  url_for('main.group_page') }}">group</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        <fieldset>
+        <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile02">
+                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+              </div>
+              <div class="input-group-append">
+                <span class="input-group-text">Upload</span>
+              </div>
+            </div>
+        </div>
+        </fieldset>
+    </div>
+
 {% endblock %}
+
+
 
 {% block content %}
 <H2> Positions </H2>
