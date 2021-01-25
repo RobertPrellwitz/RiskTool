@@ -98,10 +98,12 @@ def portfolio_page():
 
 @main_blueprint.route('/Group', methods=['GET', 'POST'])
 @login_required
+# @csrf.exempt
 def group_page():
+
     if request.method == "GET":
         position = Position()
-        ticker = "F"
+        ticker = "FSLY"
         csv = "currentholding.csv"
         df = position.get_data_from_file(csv)
         group = position.filter_holdings(df, ticker)
@@ -116,6 +118,7 @@ def group_page():
     elif request.method == "POST":
         position = Position()
         ticker = request.form.get('ticker')
+        # , meta = {'csrf': False}
         csv = "currentholding.csv"
         df = position.get_data_from_file(csv)
         group = position.filter_holdings(df, ticker)
