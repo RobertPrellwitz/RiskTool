@@ -2,13 +2,12 @@
 
 {% block pre_content %}
     <div>
-     <form class="form-inline my-2 my-lg-0" action="/Group" method="POST">
-      <input class="form-control mr-sm-2" id="group" type="text" placeholder="AAPL">
-      <button class="btn btn-info my-2 my-sm-0" type="submit" value="Submit">Ticker ( Group )</button>
+    <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.group_page') }}" method="POST">
+{#         {{ form.csrf_token }}#}
+        <input class="form-control mr-sm-2" type="text" name="ticker" placeholder="AAPL">
+        <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Ticker ( Group )</button>
     </form>
     </div>
-
-
 
 {% endblock %}
 
