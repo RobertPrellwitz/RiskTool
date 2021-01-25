@@ -108,6 +108,27 @@ class Position:
             price = 0
         return price
 
+    def opt_vol_r_T(self, type, symbol, option, underlying, day, month, year, strike):
+        if type == "Equity":
+            price = Stock(symbol).price
+            delta = 1
+        elif option == "CALL":
+            call = Call(underlying, day, month, year, strike)
+            time = call.BandS.T
+            rate = float(call.BandS.r)
+            vol = float(call.implied_volatility())
+        elif option == "PUT":
+            put = Put(underlying, day, month, year, strike)
+            time = put.BandS.T
+            rate = float(put.BandS.r)
+            vol = float(put.implied_volatility())
+        else:
+            time = 0;
+            rate = 0;
+            vol = 0
+
+        return time, rate, vol
+
     def share_exp(self, type, quantity, delta):
         if type == 'Equity':
             exp = quantity
