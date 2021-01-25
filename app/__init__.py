@@ -40,8 +40,8 @@ def create_app(extra_config_settings={}):
     # Setup Flask-Mail
     mail.init_app(app)
 
-    # Setup WTForms CSRFProtect
-    csrf_protect.init_app(app)
+    # Setup WTForms CSRFProtect  *******Changed This to See of it Eliminates the CSRF issue!!!!!*****
+    # csrf_protect.init_app(app)
 
     # Setup Equity Samlpe Data
     eqdb = Equity_Data()
