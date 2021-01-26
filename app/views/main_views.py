@@ -123,9 +123,10 @@ def group_page():
         df = position.get_data_from_file(csv)
         group = position.filter_holdings(df, ticker)
         data = position.check_equity(group)
+        group = position.get_holdings(group)
         vars = position.prep_for_exp(data)
         total = position.group_exp(vars)
-        exposure = pandas.DataFrame(total)
+        exposure = total.T
 
         return render_template("main/group.html", tables=[
             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
@@ -134,7 +135,7 @@ def group_page():
                                    'Option Delta', 'Exposure'],
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format}),
-                               [exposure.to_html(table_id="Exposure")]])
+                               [exposure.to_html(index = True, header=False, table_id="Exposure")]])
     else:
         return redirect(url_for("main/home_page.html"))
 
