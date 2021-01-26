@@ -12,6 +12,23 @@ class Position:
         df.drop(df.filter(regex="Unnamed"), axis=1, inplace=True)
         return df
 
+    def check_equity(self, group):
+        tup = group.shape
+        x = tup[0];
+        y = tup[1];
+        z = 0
+        for i in range(x):
+            if group.iloc[i, 1] == "Equity":
+                z = z + 1
+        if z == 0:
+            ticker = group.iloc[0,2]
+            new_row = pandas.DataFrame({'Symbol' : ticker, 'Type' : 'Equity', 'Option Underlier': ticker, 'Quantity' : 0,
+                                  'Strike Price' : 0, 'Expiration Date' : 'NaT'}, index = [0])
+            group = pandas.concat([new_row, group]).reset_index(drop=True)
+            return group
+        else:
+            return group
+
     def get_holdings(self, df):
         df["Option Underlier"] = df.apply(lambda x: self.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
