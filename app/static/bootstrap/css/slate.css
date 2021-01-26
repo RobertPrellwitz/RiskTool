@@ -10811,17 +10811,17 @@ legend {
     color: #7b7c7b;
 }
 #Portfolio tr{
-    size: 12px;
+    size: 14px;
 }
 
 #Portfolio th{
-  background-color: slateblue;
+  background-color: #221766;
   color: burlywood;
 }
 table.dataframe, .dataframe th{
   border-bottom: 3px solid #C8C8C8;
-  padding: 12px;
-  font-size: 14px;
+  padding: 8px;
+  font-size: 12px;
   text-align:center;
   background-color: #1b4f72;
   color: #a4e7d6;
@@ -10832,6 +10832,25 @@ table.dataframe, .dataframe th{
   border-bottom: 1px solid #C8C8C8;
   border-collapse: collapse;
   text-align:center;
-  padding: 10px;
-  margin-bottom: 40px;
+  padding: 8px;
+  margin-bottom: 12px;
   font-size: 12px;}
+
+
+#Exposure tr:nth-child(even){
+    background-color: #1d1d1d;
+    color: #7b7c7b;
+}
+#Exposure tr:nth-child(odd){
+    background-color: #1d2f42;
+    color: #7b7c7b;
+}
+#Exposure tr{
+    size: 12px;
+}
+
+#Exposure th{
+  background-color: #1b255f;
+  color: #e2d7cd;;
+  size: 16px;
+}

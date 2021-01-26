@@ -8,6 +8,7 @@ import pandas
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
+
 # The Home page is accessible to anyone
 @main_blueprint.route('/')
 def home_page():
@@ -53,12 +54,15 @@ def user_profile_page():
     # Process GET or invalid POST
     return render_template('main/user_profile_page.html',
                            form=form)
+
+
 @main_blueprint.route('/equity')
 @login_required
 def equity_page(equity_key):
     eqdb = current_app.config["eqdb"]
     equity = eqdb.get_equity(equity_key)
-    return render_template("equity.html", equity = equity)
+    return render_template("equity.html", equity=equity)
+
 
 @main_blueprint.route('/holdings', methods=['GET', 'POST'])
 @login_required
@@ -88,19 +92,19 @@ def portfolio_page():
         holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
             holdings.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
-                            columns=['Symbol', 'Option Underlier',
-                                     'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-                                     'Option Delta', 'Exposure'],
-                            formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                        "Exposure": "{:,.0f}".format})])
+                             columns=['Symbol', 'Option Underlier',
+                                      'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                      'Option Delta', 'Exposure'],
+                             formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                         "Exposure": "{:,.0f}".format})])
     else:
         return redirect(url_for("main/home_page.html"))
+
 
 @main_blueprint.route('/Group', methods=['GET', 'POST'])
 @login_required
 # @csrf.exempt
 def group_page():
-
     if request.method == "GET":
         position = Position()
         ticker = "FSLY"
@@ -110,11 +114,11 @@ def group_page():
         group = position.get_holdings(group)
         return render_template("main/group.html", tables=[
             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
-                             columns=['Symbol', 'Option Underlier',
-                                      'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-                                      'Option Delta', 'Exposure'],
-                             formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                         "Exposure": "{:,.0f}".format})])
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})])
     elif request.method == "POST":
         position = Position()
         ticker = request.form.get('ticker')
@@ -126,18 +130,20 @@ def group_page():
         group = position.get_holdings(group)
         vars = position.prep_for_exp(data)
         total = position.group_exp(vars)
-        exposure = total.T
-
-        return render_template("main/group.html", tables=[
-            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+        exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
+        group = group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
                                    'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
                                    'Option Delta', 'Exposure'],
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                      "Exposure": "{:,.0f}".format}),
-                               [exposure.to_html(index = True, header=False, table_id="Exposure")]])
+                                      "Exposure": "{:,.0f}".format})
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
+
+        return render_template("main/group.html", tables=[group, exposure])
     else:
         return redirect(url_for("main/home_page.html"))
+
 
 @main_blueprint.route('/Sample2', methods=['GET', 'POST'])
 @login_required
@@ -147,8 +153,12 @@ def sample2_page():
         csv = "holdings2.csv"
         df = position.get_data_from_file(csv)
         sample2 = position.get_holdings(df)
-        return render_template("main/sample2.html", tables=[sample2.to_html(header=True, index=False,na_rep="--" , table_id="Portfolio",columns=['Symbol','Option Underlier',
-                 'Option Type','Quantity','Strike Price','Expiration Date','Market Price', 'Option Delta', 'Exposure'],
-                    formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,"Exposure" : "{:,.0f}".format})])
+        return render_template("main/sample2.html", tables=[
+            sample2.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                            columns=['Symbol', 'Option Underlier',
+                                     'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                     'Option Delta', 'Exposure'],
+                            formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                        "Exposure": "{:,.0f}".format})])
     else:
         return redirect(url_for("main/home_page.html"))

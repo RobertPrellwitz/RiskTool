@@ -60,7 +60,7 @@ class Position:
         ticker = df.iloc[0,2]
         stock_px = float(Stock(ticker).price)
         inc = round(stock_px / 100)
-        price = stock_px + (inc * 5)
+        price = round(stock_px + (inc * 5))
         for i in range(10):
             df[f'$ {price}'] = df.apply(lambda x: self.eqty_exp(x['Type'], price, x['Option Type'], x['Quantity'],
                                         x['Strike Price'], x['Rate'], x['Time'], x['Vol']), axis = 1)
@@ -79,6 +79,7 @@ class Position:
                 exp = delta * qty * 100
             else:
                 exp = 0
+            exp = round(exp)
             return exp
 
 
