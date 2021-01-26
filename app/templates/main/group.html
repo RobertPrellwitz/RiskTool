@@ -3,7 +3,6 @@
 {% block pre_content %}
     <div>
     <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.group_page') }}" method="POST">
-{#         {{ form.csrf_token }}#}
         <input class="form-control mr-sm-2" type="text" name="ticker" placeholder="AAPL">
         <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Ticker ( Group )</button>
     </form>
@@ -12,13 +11,10 @@
 {% endblock %}
 
 {% block content %}
-<H2>  Group  </H2>
-    <table id="Portfolio">
-        {% for table in tables %}
-            <h4></h4>
+    {% for table in tables %}
         {{ table|safe }}
-        {% endfor %}
-    </table>
+            <hr class="rounded">
+    {% endfor %}
 {% endblock %}
 
 
