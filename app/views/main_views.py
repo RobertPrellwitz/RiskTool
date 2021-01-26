@@ -83,7 +83,7 @@ def holdings_page():
 def portfolio_page():
     if request.method == "GET":
         position = Position()
-        csv = "currentholding.csv"
+        csv = "holdings2.csv"
         df = position.get_data_from_file(csv)
         holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
@@ -122,14 +122,19 @@ def group_page():
         csv = "currentholding.csv"
         df = position.get_data_from_file(csv)
         group = position.filter_holdings(df, ticker)
-        group = position.get_holdings(group)
+        data = position.check_equity(group)
+        vars = position.prep_for_exp(data)
+        total = position.group_exp(vars)
+        exposure = pandas.DataFrame(total)
+
         return render_template("main/group.html", tables=[
             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
                                    'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
                                    'Option Delta', 'Exposure'],
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                      "Exposure": "{:,.0f}".format})])
+                                      "Exposure": "{:,.0f}".format}),
+                               [exposure.to_html(table_id="Exposure")]])
     else:
         return redirect(url_for("main/home_page.html"))
 

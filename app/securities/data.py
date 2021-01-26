@@ -45,6 +45,43 @@ class Position:
         df['Exposure'] = df.apply(lambda x: self.share_exp(x['Type'], x['Quantity'], x['Option Delta']), axis=1)
         return df
 
+    def prep_for_exp(self, df):
+        df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
+        df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
+        df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
+        df['Strike Price'] = df.apply(lambda x: self.set_strike(x['Type'], x['Strike Price']), axis=1)
+        df[['Time', 'Rate', 'Vol']] = df.apply(lambda x: pandas.Series(
+            self.opt_vol_r_T(x['Type'], x['Symbol'], x['Option Type'], x['Option Underlier'], x['Day'], x['Month'],
+                             x['Year'], x['Strike Price'])), axis=1)
+        return df
+
+    def group_exp(self, df):
+        ticker = df.iloc[0,2]
+        stock_px = float(Stock(ticker).price)
+        inc = round(stock_px / 100)
+        price = stock_px + (inc * 5)
+        for i in range(10):
+            df[f'$ {price}'] = df.apply(lambda x: self.eqty_exp(x['Type'], price, x['Option Type'], x['Quantity'],
+                                        x['Strike Price'], x['Rate'], x['Time'], x['Vol']), axis = 1)
+            price = price - inc
+        return df
+
+    def eqty_exp(self, type, stock_px, option, qty, strike, rate, time, vol ):
+            if type == "Equity":
+                delta = 1
+                exp = delta * qty
+            elif option == "CALL":
+                delta = self.delta_call(stock_px,strike,time, rate, vol)
+                exp = delta * qty * 100
+            elif option == "PUT":
+                delta = self.delta_put(stock_px,strike,time, rate, vol)
+                exp = delta * qty * 100
+            else:
+                exp = 0
+            return exp
+
+
     def delta_call(self, S, K, T, r, sigma):
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
         delta_call = si.norm.cdf(d1, 0.0, 1.0)
@@ -112,7 +149,7 @@ class Position:
             delta = 0
         return price, delta
 
-    def opt_prices(self, symbol, option, underlying, day, month, year, strike):
+    def opt_prices(self, type, symbol, option, underlying, day, month, year, strike):
         if type == "Equity":
             price = Stock(symbol).price
         elif option == "CALL":
@@ -127,8 +164,9 @@ class Position:
 
     def opt_vol_r_T(self, type, symbol, option, underlying, day, month, year, strike):
         if type == "Equity":
-            price = Stock(symbol).price
-            delta = 1
+            time = 1
+            rate = 1
+            vol = 1
         elif option == "CALL":
             call = Call(underlying, day, month, year, strike)
             time = call.BandS.T
@@ -145,6 +183,45 @@ class Position:
             vol = 0
 
         return time, rate, vol
+
+    def opt_time(self, type, symbol, option, underlying, day, month, year, strike):
+        if type == "Equity":
+            time = 1
+        elif option == "CALL":
+            call = Call(underlying, day, month, year, strike)
+            time = call.BandS.T
+        elif option == "PUT":
+            put = Put(underlying, day, month, year, strike)
+            time = put.BandS.T
+        else:
+            time = 0
+        return time
+
+    def opt_rate(self, type, symbol, option, underlying, day, month, year, strike):
+        if type == "Equity":
+            rate = 1
+        elif option == "CALL":
+            call = Call(underlying, day, month, year, strike)
+            rate = float(call.BandS.r)
+        elif option == "PUT":
+            put = Put(underlying, day, month, year, strike)
+            rate = float(put.BandS.r)
+        else:
+            rate = 0
+        return rate
+
+    def opt_vol(self, type, symbol, option, underlying, day, month, year, strike):
+        if type == "Equity":
+            vol = 1
+        elif option == "CALL":
+            call = Call(underlying, day, month, year, strike)
+            vol = float(call.implied_volatility())
+        elif option == "PUT":
+            put = Put(underlying, day, month, year, strike)
+            vol = float(put.implied_volatility())
+        else:
+            vol = 0
+        return vol
 
     def share_exp(self, type, quantity, delta):
         if type == 'Equity':
