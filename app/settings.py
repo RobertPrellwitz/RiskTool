@@ -27,3 +27,9 @@ USER_ENABLE_USERNAME = False  # Register and Login with username
 USER_AFTER_LOGIN_ENDPOINT = 'main.member_page'
 USER_AFTER_LOGOUT_ENDPOINT = 'main.home_page'
 
+#Flask File Settings
+
+UPLOAD_EXTENSIONS = ['.csv', '.txt']
+MAX_CONTENT_LENGHT = 1024*1024
+# UPLOAD_PATH = "app/static/portfolios"
+
