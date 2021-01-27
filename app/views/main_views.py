@@ -5,7 +5,7 @@ from app.models.user_models import UserProfileForm
 from app.securities.holdings import Security_Data
 from app.securities.data import Position
 import pandas
-
+import os
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
 
@@ -21,10 +21,21 @@ def sign_in_page():
 
 
 # The User page is accessible to authenticated users (users that have logged in)
-@main_blueprint.route('/member')
+@main_blueprint.route('/member', methods=['GET', 'POST'])
 @login_required  # Limits access to authenticated users
 def member_page():
-    return render_template('main/user_page.html')
+    if request.method == "POST":
+        position = Position()
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        file = request.files['userport']
+        # if file != '':
+        #     file_ext = os.path.splitext(file)[1]
+        #     if file_ext in current_app.config['UPLOAD_EXTENSIONS']:
+        file.save(os.path.join('app/static/portfolios', user))
+        return render_template('main/user_page.html')
+    else:
+        return render_template('main/user_page.html')
 
 
 # The Admin page is accessible to users with the 'admin' role
@@ -87,7 +98,11 @@ def holdings_page():
 def portfolio_page():
     if request.method == "GET":
         position = Position()
-        csv = "holdings2.csv"
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        # csv = 'holdings2.csv'
+        string = 'app/static/portfolios/' + str(user)
+        csv = string
         df = position.get_data_from_file(csv)
         holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
@@ -97,6 +112,31 @@ def portfolio_page():
                                       'Option Delta', 'Exposure'],
                              formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                          "Exposure": "{:,.0f}".format})])
+    elif request.method == "POST":
+        # def upload_file():
+        position = Position()
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        file = request.files['userport']
+        # if file != '':
+        #     file_ext = os.path.splitext(file)[1]
+        #     if file_ext in current_app.config['UPLOAD_EXTENSIONS']:
+        file.save(os.path.join('app/static/portfolios', user))
+        portfolio = 'app/static/portfolios/' + str(user)
+        df = position.get_data_from_file(portfolio)
+        holdings = position.get_holdings(df)
+        return render_template("main/portfolio.html", tables=[
+            holdings.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                             columns=['Symbol', 'Option Underlier',
+                                      'Option Type', 'Quantity', 'Strike Price', 'Expiration Date',
+                                      'Market Price',
+                                      'Option Delta', 'Exposure'],
+                             formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                         "Exposure": "{:,.0f}".format})])
+            # else:
+            #     return redirect(url_for('main/portfolio.html'))
+
+            # return redirect(url_for('main/portfolio.html'))
     else:
         return redirect(url_for("main/home_page.html"))
 
