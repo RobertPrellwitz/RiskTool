@@ -2,9 +2,10 @@
 
 {% block pre_content %}
 {% endblock %}
-
+<div class="container-fluid p-4">
 {% block content %}
-    <div style="align-content: stretch">
+<div class="container-fluid p-4">
+    <div style="align-content: stretch ">
     <H2 style="align-content: center; color: dodgerblue"> Sample Position Data </H2>
     </div>
 {#    {% for page in pages %}#}
@@ -17,6 +18,8 @@
         {{ table|safe }}
         {% endfor %}
     </table>
-
+</div>
 
 {% endblock %}
+
+</div>

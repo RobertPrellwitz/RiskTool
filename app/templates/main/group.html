@@ -1,19 +1,70 @@
 {% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
 
 {% block pre_content %}
-    <div class="container-fluid p-3">
+
+<div class="container-fluid p-3">
         <div class="row align-content-center">
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.group_page') }}" method="POST">
                     <input class="form-control mr-sm-2" type="text" name="ticker" placeholder="AAPL">
                     <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Ticker ( Group )</button>
                 </form>
             </div>
-            <div class="col-lg-4">
+
+            <div class="col-lg-3">
                 <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.portfolio_page') }}" method="GET">
                     <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Back to Portfolio</button>
                 </form>
             </div>
+
+            <div class="col-lg-3">
+                <button class="btn btn-info" onclick="openForm()">Add New Equity</button>
+                    <div class="form-popup" id="NewEquity">
+                      <form action="{{  url_for('main.new_equity_page') }}"  method="POST" class="form-container">
+                        <h4 class="text-info">New Equity</h4>
+
+                        <label for="ticker" class="text-info"><b>Ticker</b></label>
+                        <input type="text" placeholder="Ticker" name="ticker" required>
+
+                        <label for="Quantity" class="number"><b>Quantity</b></label>
+                        <input type="number" placeholder="Quantity" name="quantity" required>
+
+                        <button type="submit" class="btn">Save</button>
+                        <button type="submit" class="btn cancel" onclick="closeForm()">Close</button>
+                      </form>
+                    </div>
+            </div>
+
+             <div class="col-lg-3">
+                <button class="btn btn-info" onclick="openForm1()">Add New Option</button>
+                    <div class="form-popup" id="NewOption">
+                      <form action="{{  url_for('main.new_option_page') }}"  method="POST" class="form-container">
+                        <h4 class="text-info">New Option</h4>
+
+                        <label for="symbol" class="text-info"><b>Symbol</b></label>
+                        <input type="text" placeholder="Ticker" name="symbol" required>
+
+                          <label for="underlying ticker" class="text-info"><b>Unerlying Ticker</b></label>
+                        <input type="text" placeholder="Ticker" name="underlying" required>
+
+                           <label for="Option Type" class="text-info"><b>CALL or PUT</b></label>
+                        <input type="text" placeholder="CALL or PUT" name="type" required>
+
+                        <label for="Quantity" class="text-info"><b>Quantity</b></label>
+                        <input type="number" placeholder="Quantity" name="quantity" required>
+
+                          <label for="Strike Price" class="text-info"><b>Strike Price</b></label>
+                        <input type="number" placeholder="Strike Price" name="strike price" required>
+
+                          <label for="Expiration" class="text-info"><b>Expiration Date</b></label>
+                        <input type="text" placeholder="Expiration" name="expiration" required>
+
+                        <button type="submit" class="btn">Save</button>
+                        <button type="submit" class="btn cancel" onclick="closeForm1()">Close</button>
+                      </form>
+                    </div>
+            </div>
+
         </div>
     </div>
 
