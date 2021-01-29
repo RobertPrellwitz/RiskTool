@@ -21,7 +21,7 @@ class Position:
         z = 0
         for i in range(x):
             if group.iloc[i, 1] == "Equity":
-                group.iloc[i, 6] = 'NaT'
+                group.iloc[i, 6] = '01/01/2100'
                 z = z + 1
         if z == 0:
             ticker = group.iloc[0,2]
@@ -63,7 +63,7 @@ class Position:
         return df
 
     def prep_for_exp(self, df):
-        # df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
         df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
         df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
         df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
@@ -76,7 +76,7 @@ class Position:
     def group_exp(self, df):
         ticker = df.iloc[0,2]
         stock_px = float(Stock(ticker).price)
-        inc = round(stock_px / 100)
+        inc = max(round(stock_px / 100),0.25)
         price = round(stock_px + (inc * 5))
         for i in range(10):
             df[f'$ {price}'] = df.apply(lambda x: self.eqty_exp(x['Type'], price, x['Option Type'], x['Quantity'],

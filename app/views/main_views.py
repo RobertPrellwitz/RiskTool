@@ -6,6 +6,7 @@ from app.securities.holdings import Security_Data
 from app.securities.data import Position
 import pandas
 import os
+from datetime import datetime
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
 
@@ -223,7 +224,6 @@ def new_equity_page():
         ticker = request.form.get('ticker')
         quantity = request.form.get("quantity")
         quantity = int(quantity)
-        # number = int(ticker)
         csv = position.get_port_data()
         df = position.get_data_from_file(csv)
         df.loc[len(df.index)] = [ticker, 'Equity', '', '', quantity, '', '']
@@ -233,7 +233,6 @@ def new_equity_page():
         group = position.filter_holdings(df, ticker)
         data = position.check_equity(group)
         group = position.get_group_holdings(group)
-        # group['Quantity'] = group.to_numeric(group['Quantity'])
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
         vars = position.prep_for_exp(data)
         total = position.group_exp(vars)
@@ -272,21 +271,26 @@ def new_option_page():
                                       "Exposure": "{:,.0f}".format})])
     elif request.method == "POST":
         position = Position()
-        ticker = request.form.get('ticker')
+        symbol = request.form.get('symbol')
+        underlier = request.form.get('underlying')
+        type = request.form.get('type')
         quantity = request.form.get("quantity")
+        strike = request.form.get('strike price')
+        expiry = request.form.get('expiration')
         quantity = int(quantity)
-        # number = int(ticker)
+        strike = int(strike)
         csv = position.get_port_data()
         df = position.get_data_from_file(csv)
-        df.loc[len(df.index)] = [ticker, 'Equity', '', '', quantity, '', '']
+        df.loc[len(df.index)] = [symbol, 'Option', underlier, type, quantity, strike, expiry]
         df.sort_values(by=['Symbol'], inplace=True)
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
-        group = position.filter_holdings(df, ticker)
+        group = position.filter_holdings(df, underlier)
         data = position.check_equity(group)
+        data['Expiration Date'] = data.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
         group = position.get_group_holdings(group)
-        # group['Quantity'] = group.to_numeric(group['Quantity'])
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
+
         vars = position.prep_for_exp(data)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
