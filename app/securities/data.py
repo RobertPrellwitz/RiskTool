@@ -4,6 +4,8 @@ from wallstreet import Stock, Call, Put
 import numpy as np
 import scipy.stats as si
 from datetime import datetime
+from app.models.user_models import UserProfileForm
+from flask_user import current_user, login_required, roles_required
 
 class Position:
 
@@ -19,6 +21,7 @@ class Position:
         z = 0
         for i in range(x):
             if group.iloc[i, 1] == "Equity":
+                group.iloc[i, 6] = 'NaT'
                 z = z + 1
         if z == 0:
             ticker = group.iloc[0,2]
@@ -45,8 +48,22 @@ class Position:
         df['Exposure'] = df.apply(lambda x: self.share_exp(x['Type'], x['Quantity'], x['Option Delta']), axis=1)
         return df
 
-    def prep_for_exp(self, df):
+    def get_group_holdings(self, df):
         df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
+        df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
+        df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
+        df['Strike Price'] = df.apply(lambda x: self.set_strike(x['Type'], x['Strike Price']), axis=1)
+        df[['Market Price', 'Option Delta']] = df.apply(
+            lambda x: pandas.Series(
+                self.opt_values(x['Type'], x['Symbol'], x['Option Type'], x['Option Underlier'], x['Day'],
+                                x['Month'],
+                                x['Year'], x['Strike Price'])), axis=1)
+        df['Exposure'] = df.apply(lambda x: self.share_exp(x['Type'], x['Quantity'], x['Option Delta']), axis=1)
+        return df
+
+    def prep_for_exp(self, df):
+        # df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
         df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
         df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
         df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
@@ -92,6 +109,7 @@ class Position:
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
         delta_put = si.norm.cdf(-d1, 0.0, 1.0)
         return -delta_put
+
     def add_und(self,type, under, sym):
         if type == "Equity":
             return sym
@@ -235,3 +253,13 @@ class Position:
         filter = df['Option Underlier'] == ticker
         position = df[filter]
         return position
+
+    def get_port_data(self):
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        string = 'app/static/portfolios/' + str(user)
+        return string
+
+    # def add_equity(self,ticker, quantity):
+    #     df.loc[len]
+

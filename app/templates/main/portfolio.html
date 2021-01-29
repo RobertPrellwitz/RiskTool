@@ -1,25 +1,71 @@
 {% extends "main/main_base.html" %}
 
 {% block pre_content %}
-    <div>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="nav-link" href="{{  url_for('main.group_page') }}">group</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        <fieldset>
-        <div class="form-group">
-            <div class="input-group mb-3">
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" id="inputGroupFile02">
-                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
-              </div>
-              <div class="input-group-append">
-                <span class="input-group-text">Upload</span>
-              </div>
+
+    <div class="container-fluid p-3">
+        <div class="row align-content-center">
+            <div class="col-lg-3">
+                <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.group_page') }}" method="POST">
+                    <input class="form-control mr-sm-2" type="text" name="ticker" placeholder="AAPL">
+                    <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Ticker ( Group )</button>
+                </form>
             </div>
+
+            <div class="col-lg-3">
+                <form class="form-inline my-2 my-lg-0" action="{{  url_for('main.portfolio_page') }}" method="GET">
+                    <button class="btn btn-info my-2 my-sm-0" type="submit" value="Search">Back to Portfolio</button>
+                </form>
+            </div>
+
+            <div class="col-lg-3">
+                <button class="btn btn-info" onclick="openForm()">Add New Equity</button>
+                    <div class="form-popup" id="NewEquity">
+                      <form action="{{  url_for('main.new_equity_page') }}"  method="POST" class="form-container">
+                        <h4 class="text-info">New Equity</h4>
+
+                        <label for="ticker" class="text-info"><b>Ticker</b></label>
+                        <input type="text" placeholder="Ticker" name="ticker" required>
+
+                        <label for="Quantity" class="number"><b>Quantity</b></label>
+                        <input type="number" placeholder="Quantity" name="quantity" required>
+
+                        <button type="submit" class="btn">Save</button>
+                        <button type="submit" class="btn cancel" onclick="closeForm()">Close</button>
+                      </form>
+                    </div>
+            </div>
+
+             <div class="col-lg-3">
+                <button class="btn btn-info" onclick="openForm1()">Add New Option</button>
+                    <div class="form-popup" id="NewOption">
+                      <form action="{{  url_for('main.new_option_page') }}"  method="POST" class="form-container">
+                        <h4 class="text-info">New Option</h4>
+
+                        <label for="symbol" class="text-info"><b>Ticker</b></label>
+                        <input type="text" placeholder="Ticker" name="symbol" required>
+
+                          <label for="underlying ticker" class="text-info"><b>Ticker</b></label>
+                        <input type="text" placeholder="Ticker" name="underlying" required>
+
+                           <label for="Option Type" class="text-info"><b>CALL or PUT</b></label>
+                        <input type="number" placeholder="CALL or PUT" name="quantity" required>
+
+                        <label for="Quantity" class="text-info"><b>Quantity</b></label>
+                        <input type="number" placeholder="Quantity" name="quantity" required>
+
+                          <label for="Strike Price" class="text-info"><b>Strike Price</b></label>
+                        <input type="number" placeholder="Strike Price" name="strike price" required>
+
+                          <label for="Expiration" class="text-info"><b>Expiration Date</b></label>
+                        <input type="date" placeholder="Expiration" name="expiration" required>
+
+                        <button type="submit" class="btn">Save</button>
+                        <button type="submit" class="btn cancel" onclick="closeForm1()">Close</button>
+                      </form>
+                    </div>
+            </div>
+
         </div>
-        </fieldset>
     </div>
 
 {% endblock %}
@@ -27,34 +73,15 @@
 
 
 {% block content %}
-<H2> Positions </H2>
-    <table id="Portfolio">
-        {% for table in tables %}
-            <h4></h4>
-        {{ table|safe }}
-        {% endfor %}
-    </table>
+<div class="container-fluid p-5" align="content-center">
+    <H2 style="color: #007bff"> Positions </H2>
+        <table id="Portfolio" align="center">
+            {% for table in tables %}
+                <h4></h4>
+            {{ table|safe }}
+            {% endfor %}
+        </table>
 
-
+</div>
 {% endblock %}
 
-<!--    <table>-->
-<!--        <tr>-->
-<!--            {% for col in column_names %}-->
-<!--            <th style=" text-align:center">{{ col }}</th>-->
-<!--            {% endfor %}-->
-<!--        </tr>-->
-<!--        {% for row in row_data %}-->
-<!--        <tr style="text-align:center">-->
-<!--            {% for col, row_ in zip(column_names, row) %}-->
-<!--            {% if col == link_column %}-->
-<!--            <td>-->
-<!--                <a href="{{url_for('main.group_page')}}">{{ row_ }}</a>-->
-<!--            </td>-->
-<!--            {% else %}-->
-<!--            <td>{{ row_ }}</td>-->
-<!--            {% endif %}-->
-<!--            {% endfor %}-->
-<!--        </tr>-->
-<!--        {% endfor %}-->
-<!--    </table>-->

@@ -29,9 +29,8 @@ def member_page():
         user_id = current_user.get_id()
         user = user_id[0:7]
         file = request.files['userport']
-        # if file != '':
-        #     file_ext = os.path.splitext(file)[1]
-        #     if file_ext in current_app.config['UPLOAD_EXTENSIONS']:
+        # file = position.get_data_from_file(file)
+        # file = file.to_csv('file.csv',encoding='utf-8', index=False)
         file.save(os.path.join('app/static/portfolios', user))
         return render_template('main/user_page.html')
     else:
@@ -98,11 +97,7 @@ def holdings_page():
 def portfolio_page():
     if request.method == "GET":
         position = Position()
-        user_id = current_user.get_id()
-        user = user_id[0:7]
-        # csv = 'holdings2.csv'
-        string = 'app/static/portfolios/' + str(user)
-        csv = string
+        csv = position.get_port_data()
         df = position.get_data_from_file(csv)
         holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
@@ -113,14 +108,11 @@ def portfolio_page():
                              formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                          "Exposure": "{:,.0f}".format})])
     elif request.method == "POST":
-        # def upload_file():
+
         position = Position()
         user_id = current_user.get_id()
         user = user_id[0:7]
         file = request.files['userport']
-        # if file != '':
-        #     file_ext = os.path.splitext(file)[1]
-        #     if file_ext in current_app.config['UPLOAD_EXTENSIONS']:
         file.save(os.path.join('app/static/portfolios', user))
         portfolio = 'app/static/portfolios/' + str(user)
         df = position.get_data_from_file(portfolio)
@@ -148,10 +140,13 @@ def group_page():
     if request.method == "GET":
         position = Position()
         ticker = "FSLY"
-        csv = "currentholding.csv"
+        csv = position.get_port_data()
         df = position.get_data_from_file(csv)
+        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
         group = position.filter_holdings(df, ticker)
-        group = position.get_holdings(group)
+        group = position.get_group_holdings(group)
+        group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
         return render_template("main/group.html", tables=[
             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
@@ -162,17 +157,19 @@ def group_page():
     elif request.method == "POST":
         position = Position()
         ticker = request.form.get('ticker')
-        # , meta = {'csrf': False}
-        csv = "currentholding.csv"
+        csv = position.get_port_data()
         df = position.get_data_from_file(csv)
+        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
         group = position.filter_holdings(df, ticker)
         data = position.check_equity(group)
-        group = position.get_holdings(group)
+        group = position.get_group_holdings(group)
+        group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
         vars = position.prep_for_exp(data)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
-        group = group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+        group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
                                    'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
                                    'Option Delta', 'Exposure'],
@@ -186,7 +183,6 @@ def group_page():
 
 
 @main_blueprint.route('/Sample2', methods=['GET', 'POST'])
-@login_required
 def sample2_page():
     if request.method == "GET":
         position = Position()
@@ -200,5 +196,109 @@ def sample2_page():
                                      'Option Delta', 'Exposure'],
                             formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                         "Exposure": "{:,.0f}".format})])
+    else:
+        return redirect(url_for("main/home_page.html"))
+
+@main_blueprint.route('/NewEquity', methods=['GET', 'POST'])
+@login_required
+# @csrf.exempt
+def new_equity_page():
+    if request.method == "GET":
+        position = Position()
+        ticker = "FSLY"
+        csv = position.get_port_data()
+        df = position.get_data_from_file(csv)
+        group = position.filter_holdings(df, ticker)
+        group = position.get_holdings(group)
+        group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
+        return render_template("main/group.html", tables=[
+            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})])
+    elif request.method == "POST":
+        position = Position()
+        ticker = request.form.get('ticker')
+        quantity = request.form.get("quantity")
+        quantity = int(quantity)
+        # number = int(ticker)
+        csv = position.get_port_data()
+        df = position.get_data_from_file(csv)
+        df.loc[len(df.index)] = [ticker, 'Equity', '', '', quantity, '', '']
+        df.sort_values(by=['Symbol'], inplace=True)
+        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
+        group = position.filter_holdings(df, ticker)
+        data = position.check_equity(group)
+        group = position.get_group_holdings(group)
+        # group['Quantity'] = group.to_numeric(group['Quantity'])
+        group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
+        vars = position.prep_for_exp(data)
+        total = position.group_exp(vars)
+        exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
+        group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
+
+        return render_template("main/group.html", tables=[group, exposure])
+    else:
+        return redirect(url_for("main/home_page.html"))
+
+@main_blueprint.route('/NewOption', methods=['GET', 'POST'])
+@login_required
+# @csrf.exempt
+def new_option_page():
+    if request.method == "GET":
+        position = Position()
+        ticker = "FSLY"
+        csv = position.get_port_data()
+        df = position.get_data_from_file(csv)
+        group = position.filter_holdings(df, ticker)
+        group = position.get_holdings(group)
+        group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
+        return render_template("main/group.html", tables=[
+            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})])
+    elif request.method == "POST":
+        position = Position()
+        ticker = request.form.get('ticker')
+        quantity = request.form.get("quantity")
+        quantity = int(quantity)
+        # number = int(ticker)
+        csv = position.get_port_data()
+        df = position.get_data_from_file(csv)
+        df.loc[len(df.index)] = [ticker, 'Equity', '', '', quantity, '', '']
+        df.sort_values(by=['Symbol'], inplace=True)
+        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
+        group = position.filter_holdings(df, ticker)
+        data = position.check_equity(group)
+        group = position.get_group_holdings(group)
+        # group['Quantity'] = group.to_numeric(group['Quantity'])
+        group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
+        vars = position.prep_for_exp(data)
+        total = position.group_exp(vars)
+        exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
+        group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
+                          columns=['Symbol', 'Option Underlier',
+                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                   'Option Delta', 'Exposure'],
+                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                                      "Exposure": "{:,.0f}".format})
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
+
+        return render_template("main/group.html", tables=[group, exposure])
     else:
         return redirect(url_for("main/home_page.html"))

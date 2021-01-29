@@ -2,10 +2,37 @@
 
 {% block content %}
 
+{##}
+{#    <p><a href={{ url_for('user.login') }}>{%trans%}Sign in{%endtrans%}</a></p>#}
+{#    <p><a href={{ url_for('main.home_page') }}>{%trans%}Home Page{%endtrans%}</a> (accessible to anyone)</p>#}
+{#    <p><a href={{ url_for('main.member_page') }}>{%trans%}Member Page{%endtrans%}</a> (login_required: member@example.com / Password1)</p>#}
 
-    <p><a href={{ url_for('user.login') }}>{%trans%}Sign in{%endtrans%}</a></p>
-    <p><a href={{ url_for('main.home_page') }}>{%trans%}Home Page{%endtrans%}</a> (accessible to anyone)</p>
-    <p><a href={{ url_for('main.member_page') }}>{%trans%}Member Page{%endtrans%}</a> (login_required: member@example.com / Password1)</p>
+    <div class="container-fluid p-10 my-5; align-content-center">
+    <P>
+        <h1 class="text-info"; align="center"> Welcome to Risky!   The individual investors secret weapon!</h1>
+        <H3 class="text-warning"; align="center"> The tools professional investors use to manage risk now at your fingertips</H3>
+        <h4 class="text-success"; align="center"> If you trade options in your brokerage account our tool is for you.  Try it and you won't go back!</h4>
+
+
+    </P>
+
+    </div>
+    <div class="container-fluid p-10 my-lg-5">
+        <div class="row align-content-center">
+              <div class="col-lg-4">
+               <img class="align-content-end" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Long_call_option.svg/1200px-Long_call_option.svg.png" alt="42" width="250" height="200">
+              </div>
+          <div class="col-lg-4">
+               <img class="align-content-end" src="https://www.fidelity.com/bin-public/060_www_fidelity_com/images/LC/ShortButterflyCalls_600x340.png" alt="42" width="250" height="200">
+            </div>
+          <div class="col-lg-4">
+               <img class="align-content-end" src="https://www.danielstrading.com/wp-content/uploads/2013/05/futures-options-strategies_long-risk-reversal_960x680-300x213.png" alt="42" width="250" height="200">
+            </div>
+        </div>
+    </div>
+
+
+
 
 {% endblock %}
 
