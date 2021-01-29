@@ -126,10 +126,7 @@ def portfolio_page():
                                       'Option Delta', 'Exposure'],
                              formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                          "Exposure": "{:,.0f}".format})])
-            # else:
-            #     return redirect(url_for('main/portfolio.html'))
 
-            # return redirect(url_for('main/portfolio.html'))
     else:
         return redirect(url_for("main/home_page.html"))
 
@@ -140,13 +137,13 @@ def portfolio_page():
 def group_page():
     if request.method == "GET":
         position = Position()
-        ticker = "FSLY"
+        ticker = "AAPL"
         csv = position.get_port_data()
         df = position.get_data_from_file(csv)
-        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
-                                          axis=1)
+        # df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+        #                                   axis=1)
         group = position.filter_holdings(df, ticker)
-        group = position.get_group_holdings(group)
+        group = position.get_holdings(group)
         group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
         return render_template("main/group.html", tables=[
             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
@@ -163,10 +160,12 @@ def group_page():
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, ticker)
-        data = position.check_equity(group)
+        group = position.check_equity(group)
+        group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
+        vars = group.copy()
         group = position.get_group_holdings(group)
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
-        vars = position.prep_for_exp(data)
+        vars = position.prep_for_exp(vars)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
@@ -232,9 +231,11 @@ def new_equity_page():
                                           axis=1)
         group = position.filter_holdings(df, ticker)
         data = position.check_equity(group)
+        group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
+        vars = group.copy()
         group = position.get_group_holdings(group)
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
-        vars = position.prep_for_exp(data)
+        vars = position.prep_for_exp(vars)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
@@ -286,12 +287,12 @@ def new_option_page():
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, underlier)
-        data = position.check_equity(group)
-        data['Expiration Date'] = data.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
+        group = position.check_equity(group)
+        group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
+        vars = group.copy()
         group = position.get_group_holdings(group)
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
-
-        vars = position.prep_for_exp(data)
+        vars = position.prep_for_exp(vars)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)

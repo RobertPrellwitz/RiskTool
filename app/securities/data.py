@@ -21,12 +21,12 @@ class Position:
         z = 0
         for i in range(x):
             if group.iloc[i, 1] == "Equity":
-                group.iloc[i, 6] = '01/01/2100'
+                # group.iloc[i, 6] = 'NaN'
                 z = z + 1
         if z == 0:
             ticker = group.iloc[0,2]
             new_row = pandas.DataFrame({'Symbol' : ticker, 'Type' : 'Equity', 'Option Underlier': ticker, 'Quantity' : 0,
-                                  'Strike Price' : 0, 'Expiration Date' : 'NaT'}, index = [0])
+                                  'Strike Price' : 0, 'Expiration Date' : ''}, index = [0])
             group = pandas.concat([new_row, group]).reset_index(drop=True)
             return group
         else:
@@ -49,7 +49,7 @@ class Position:
         return df
 
     def get_group_holdings(self, df):
-        df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        # df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
         df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
         df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
         df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
@@ -63,7 +63,7 @@ class Position:
         return df
 
     def prep_for_exp(self, df):
-        df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        # df['Expiration Date'] = df.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
         df['Month'] = df.apply(lambda x: self.add_month(x['Type'], x['Expiration Date']), axis=1)
         df['Day'] = df.apply(lambda x: self.add_day(x['Type'], x['Expiration Date']), axis=1)
         df['Year'] = df.apply(lambda x: self.add_year(x['Type'], x['Expiration Date']), axis=1)
