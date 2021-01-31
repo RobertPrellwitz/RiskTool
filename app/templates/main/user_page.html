@@ -12,12 +12,12 @@
 
 
                     <form action="" method="POST" enctype="multipart/form-data">
-                        <small id="fileHelp" class="form-text text-danger">Use this to upload updates to your portfolio</small>
+                        <small id="fileHelp" class="form-text text-danger">Use this to upload updates to your  user created portfolio</small>
                          <div class="form-group">
                             <div class="input-group mb-3" >
                               <div class="custom-file">
                                 <input type="file" class="custom-file-input text-warning" name="userport" id="userport">
-                                <label class="custom-file-label text-danger" for="userport">Choose file</label>
+                                <label class="custom-file-label text-danger" for="userport">Choose CSV</label>
                               </div>
                               <div class="input-group-append">
                                   <button class="input-group-text text-info" type="submit">Upload</button>
@@ -25,6 +25,22 @@
                             </div>
                          </div>
                     </form>
+
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        <small id="fileHelp" class="form-text text-danger">Use this to upload updates to your E*Trade portfolio</small>
+                         <div class="form-group">
+                            <div class="input-group mb-3" >
+                              <div class="custom-file">
+                                <input type="file" class="custom-file-input text-warning" name="etradeport" id="etradeport">
+                                <label class="custom-file-label text-danger" for="etradeport">Choose Etrade CSV</label>
+                              </div>
+                              <div class="input-group-append">
+                                  <button class="input-group-text text-info" type="submit">Upload</button>
+                              </div>
+                            </div>
+                         </div>
+                    </form>
+
                   <li class="nav-item p-lg-4">
                       <a class="navbar-brand text-info"  href="{{  url_for('main.portfolio_page') }}"> Load Portfolio </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">

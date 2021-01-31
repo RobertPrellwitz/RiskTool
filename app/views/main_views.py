@@ -25,14 +25,20 @@ def sign_in_page():
 @main_blueprint.route('/member', methods=['GET', 'POST'])
 @login_required  # Limits access to authenticated users
 def member_page():
-    if request.method == "POST":
+    if request.method == "POST" and 'userport' in request.files:
         position = Position()
         user_id = current_user.get_id()
         user = user_id[0:7]
         file = request.files['userport']
-        # file = position.get_data_from_file(file)
-        # file = file.to_csv('file.csv',encoding='utf-8', index=False)
         file.save(os.path.join('app/static/portfolios', user))
+        return render_template('main/user_page.html')
+    if request.method == "POST" and 'etradeport' in request.files:
+        position = Position()
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        file = request.files['etradeport']
+        file = position.get_data_from_file(file)
+        file.to_csv(os.path.join('app/static/portfolios', user), encoding='utf-8', index=False)
         return render_template('main/user_page.html')
     else:
         return render_template('main/user_page.html')
