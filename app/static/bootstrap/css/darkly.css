@@ -10560,6 +10560,26 @@ table.dataframe, .dataframe th{
   color: #e2d7cd;;
   size: 16px;
 }
+
+#vol_exp tr:nth-child(even){
+    background-color: #1d1d1d;
+    color: #7b7c7b;
+}
+#vol_exp tr:nth-child(odd){
+    background-color: #1d2f42;
+    color: #7b7c7b;
+}
+#vol_exp tr{
+    size: 12px;
+}
+
+#vol_exp th{
+  background-color: #1b255f;
+  color: #e2d7cd;;
+  size: 16px;
+}
+
+
 {box-sizing: border-box;}
 
 /* Button used to open the contact form - fixed at the bottom of the page */
