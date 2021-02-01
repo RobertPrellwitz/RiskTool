@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, current_app, request, url_for
+from flask import Blueprint, redirect, render_template, current_app, request, url_for, flash
 from flask_user import current_user, login_required, roles_required
 from app import db
 from app.models.user_models import UserProfileForm
@@ -30,6 +30,7 @@ def member_page():
         email = current_user.email
         file = request.files['userport']
         file.save(os.path.join('app/static/portfolios', email))
+        flash("File Saved!")
         return render_template('main/user_page.html')
     if request.method == "POST" and 'etradeport' in request.files:
         position = Position()
@@ -37,6 +38,7 @@ def member_page():
         file = request.files['etradeport']
         file = position.get_etrade_data_from_file(file)
         file.to_csv(os.path.join('app/static/portfolios', email), encoding='utf-8', index=False)
+        flash("File Saved!")
         return render_template('main/user_page.html')
     else:
         return render_template('main/user_page.html')
@@ -79,22 +81,22 @@ def equity_page(equity_key):
     return render_template("equity.html", equity=equity)
 
 
-@main_blueprint.route('/holdings', methods=['GET', 'POST'])
-@login_required
-def holdings_page():
-    secdb = Security_Data()
-    holdings = secdb.get_holdings('holdings2.csv')
-    data = secdb.get_data(holdings)
-    dataII = data.to_numpy()
-    secdb = secdb.seed_holdings(dataII)
-    if request.method == "GET":
-        securities = secdb.get_securities()
-        return render_template("main/holdings.html", securities=securities)
-    else:
-        form_security_keys = request.form.getlist("security_keys")
-        for form_security_key in form_security_keys:
-            secdb.delete_equity(int(form_security_key))
-        return redirect(url_for("holdings_page"))
+# @main_blueprint.route('/holdings', methods=['GET', 'POST'])
+# @login_required
+# def holdings_page():
+#     secdb = Security_Data()
+#     holdings = secdb.get_holdings('holdings2.csv')
+#     data = secdb.get_data(holdings)
+#     dataII = data.to_numpy()
+#     secdb = secdb.seed_holdings(dataII)
+#     if request.method == "GET":
+#         securities = secdb.get_securities()
+#         return render_template("main/holdings.html", securities=securities)
+#     else:
+#         form_security_keys = request.form.getlist("security_keys")
+#         for form_security_key in form_security_keys:
+#             secdb.delete_equity(int(form_security_key))
+#         return redirect(url_for("holdings_page"))
 
 
 @main_blueprint.route('/Portfolio', methods=['GET', 'POST'])
@@ -131,7 +133,8 @@ def portfolio_page():
                                          "Exposure": "{:,.0f}".format})])
 
     else:
-        return redirect(url_for("main/home_page.html"))
+        flash("Something went wrong - you were redirected home!  Please try again.")
+        return redirect(url_for("main.member_page"))
 
 
 @main_blueprint.route('/Group', methods=['GET', 'POST'])
@@ -181,14 +184,15 @@ def group_page():
                           columns=['Symbol', 'Option Underlier',
                                    'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
                                    'Option Delta', 'Exposure'],
-                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+                          formatters={'Quantity':'{:.0f}'.format,"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format})
-        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
-        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure", formatters={'Quantity':'{:.0f}'.format})
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format, formatters={'Quantity':'{:.0f}'.format})
 
         return render_template("main/group.html", tables=[group, exposure, vol_exp], titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
-        return redirect(url_for("main/home_page.html"))
+        flash("Something went wrong - you were redirected home!  Please try again.")
+        return redirect(url_for("main.member_page"))
 
 
 @main_blueprint.route('/Sample2', methods=['GET', 'POST'])
@@ -260,13 +264,16 @@ def new_equity_page():
                                    'Option Delta', 'Exposure'],
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format})
-        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
-        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure",
+                                    formatters={'Quantity': '{:.0f}'.format})
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
+                                  formatters={'Quantity': '{:.0f}'.format})
 
         return render_template("main/group.html", tables=[group, exposure, vol_exp],
                         titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
-        return redirect(url_for("main/home_page.html"))
+        flash("Something went wrong - you were redirected home!  Please try again.")
+        return redirect(url_for("main.member_page"))
 
 @main_blueprint.route('/NewOption', methods=['GET', 'POST'])
 @login_required
@@ -325,9 +332,12 @@ def new_option_page():
                                    'Option Delta', 'Exposure'],
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format})
-        exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
-        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure",
+                                    formatters={'Quantity': '{:.0f}'.format})
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
+                                  formatters={'Quantity': '{:.0f}'.format})
 
         return render_template("main/group.html", tables=[group, exposure, vol_exp], titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
-        return redirect(url_for("main/home_page.html"))
+        flash("Something went wrong - you were redirected home!  Please try again.")
+        return redirect(url_for("main.member_page"))
