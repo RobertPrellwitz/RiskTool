@@ -278,7 +278,7 @@ def new_option_page():
         position = Position()
         symbol = request.form.get('symbol')
         underlier = request.form.get('underlying').upper()
-        type = request.form.get('type')
+        type = request.form.get('type').upper()
         quantity = request.form.get("quantity")
         strike = request.form.get('strike price')
         expiry = request.form.get('expiration')
