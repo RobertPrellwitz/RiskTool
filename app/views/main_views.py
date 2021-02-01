@@ -27,18 +27,16 @@ def sign_in_page():
 def member_page():
     if request.method == "POST" and 'userport' in request.files:
         position = Position()
-        user_id = current_user.get_id()
-        user = user_id[0:7]
+        email = current_user.email
         file = request.files['userport']
-        file.save(os.path.join('app/static/portfolios', user))
+        file.save(os.path.join('app/static/portfolios', email))
         return render_template('main/user_page.html')
     if request.method == "POST" and 'etradeport' in request.files:
         position = Position()
-        user_id = current_user.get_id()
-        user = user_id[0:7]
+        email = current_user.email
         file = request.files['etradeport']
         file = position.get_etrade_data_from_file(file)
-        file.to_csv(os.path.join('app/static/portfolios', user), encoding='utf-8', index=False)
+        file.to_csv(os.path.join('app/static/portfolios', email), encoding='utf-8', index=False)
         return render_template('main/user_page.html')
     else:
         return render_template('main/user_page.html')
@@ -117,11 +115,10 @@ def portfolio_page():
     elif request.method == "POST":
 
         position = Position()
-        user_id = current_user.get_id()
-        user = user_id[0:7]
+        email = current_user.email
         file = request.files['userport']
-        file.save(os.path.join('app/static/portfolios', user))
-        portfolio = 'app/static/portfolios/' + str(user)
+        file.save(os.path.join('app/static/portfolios', email))
+        portfolio = 'app/static/portfolios/' + str(email)
         df = position.get_data_from_file(portfolio)
         holdings = position.get_holdings(df)
         return render_template("main/portfolio.html", tables=[
@@ -146,8 +143,8 @@ def group_page():
         ticker = "AAPL"
         csv = position.get_port_data()
         df = position.get_data_from_file(csv)
-        # df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
-        #                                   axis=1)
+        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
         group = position.filter_holdings(df, ticker)
         group = position.get_holdings(group)
         group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
@@ -160,7 +157,7 @@ def group_page():
                                       "Exposure": "{:,.0f}".format})])
     elif request.method == "POST":
         position = Position()
-        ticker = request.form.get('ticker')
+        ticker = request.form.get('ticker').upper()
         csv = position.get_port_data()
         df = position.get_data_from_file(csv)
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
@@ -193,7 +190,7 @@ def sample2_page():
     if request.method == "GET":
         position = Position()
         csv = "holdings2.csv"
-        df = position.get_data_from_file(csv)
+        df = position.get_etrade_data_from_file(csv)
         sample2 = position.get_holdings(df)
         return render_template("main/sample2.html", tables=[
             sample2.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
@@ -226,7 +223,7 @@ def new_equity_page():
     #                                   "Exposure": "{:,.0f}".format})])
     if request.method == "POST":
         position = Position()
-        ticker = request.form.get('ticker')
+        ticker = request.form.get('ticker').upper()
         quantity = request.form.get("quantity")
         quantity = int(quantity)
         csv = position.get_port_data()
@@ -280,7 +277,7 @@ def new_option_page():
     if request.method == "POST":
         position = Position()
         symbol = request.form.get('symbol')
-        underlier = request.form.get('underlying')
+        underlier = request.form.get('underlying').upper()
         type = request.form.get('type')
         quantity = request.form.get("quantity")
         strike = request.form.get('strike price')

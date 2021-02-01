@@ -2,7 +2,7 @@
 
 
 {% block pre_content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-2">
             <a class="navbar-brand" href="#"> User Tools </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -11,8 +11,8 @@
                 <ul class="navbar-nav mr-auto">
 
 
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        <small id="fileHelp" class="form-text text-danger">Use this to upload updates to your  user created portfolio</small>
+                    <form class ="px-3" action="" method="POST" enctype="multipart/form-data">
+                        <p id="fileHelp" class="form-text text-danger">Use this to upload updates to your user created portfolio</p>
                          <div class="form-group">
                             <div class="input-group mb-3" >
                               <div class="custom-file">
@@ -26,8 +26,8 @@
                          </div>
                     </form>
 
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        <small id="fileHelp" class="form-text text-danger">Use this to upload updates to your E*Trade portfolio</small>
+                    <form class="px-3" action="" method="POST" enctype="multipart/form-data">
+                        <p id="fileHelp" class="form-text text-danger">Use this to upload updates to your E*Trade portfolio</p>
                          <div class="form-group">
                             <div class="input-group mb-3" >
                               <div class="custom-file">
@@ -41,14 +41,12 @@
                          </div>
                     </form>
 
-                  <li class="nav-item p-lg-4">
+                    <li class="nav-item p-lg-4">
                       <a class="navbar-brand text-info"  href="{{  url_for('main.portfolio_page') }}"> Load Portfolio </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-
-
-                </ul>
+                    </ul>
             </div>
 </nav>
 
