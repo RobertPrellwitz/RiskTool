@@ -3,6 +3,8 @@ import requests
 from wallstreet import Stock, Call, Put
 import numpy as np
 import scipy.stats as si
+import sympy as sy
+from sympy.stats import Normal, cdf
 from datetime import datetime
 from app.models.user_models import UserProfileForm
 from flask_user import current_user, login_required, roles_required
@@ -90,7 +92,31 @@ class Position:
             price = price - inc
         return df
 
-    def eqty_exp(self, type, stock_px, option, qty, strike, rate, time, vol ):
+    def group_vol_exp(self, df):
+        ticker = df.iloc[0, 2]
+        stock_px = float(Stock(ticker).price)
+        tup = df.shape
+        x = tup[0]
+        y= tup[1]
+        z = 0
+        vol = 0 ; avgvol = 0
+        for i in range (x):
+            if df.iloc[i, 1] == "Option":
+                vol = df.iloc[i, 12] + vol
+                z = z + 1
+        avgvol = vol / z
+        inc = avgvol * 0.1
+        vol = avgvol - inc * 5
+        temp = round(vol*100)
+        for i in range (10):
+            temp = round(vol*100,2)
+            df[f'{temp}%'] = df.apply(lambda x: self.vol_exp(x['Type'], stock_px, x['Option Type'], x['Quantity'],
+                                        x['Strike Price'], x['Rate'], x['Time'], vol, avgvol), axis=1)
+            vol = vol + inc
+        return df
+
+
+    def eqty_exp(self, type, stock_px, option, qty, strike, rate, time, vol):
             if type == "Equity":
                 delta = 1
                 exp = delta * qty
@@ -105,6 +131,32 @@ class Position:
             exp = round(exp)
             return exp
 
+    def vol_exp(self,type, stock_px, option, qty, strike, rate, time, vol, avg_vol):
+        if type == 'Equity':
+            value = 0
+        elif option == 'CALL':
+            call_value = self.euro_call(stock_px, strike, time, rate, vol)
+            position_value = self.euro_call(stock_px, strike,time, rate, avg_vol)
+            value = round((position_value-call_value) * 100 * qty)
+        elif option == 'PUT':
+            put_value = self.euro_put(stock_px,strike, time, rate, vol)
+            position_value = self.euro_put(stock_px, strike, rate, avg_vol)
+            value = round((position_value-put_value) * 100 * qty)
+        else:
+            value = 0
+        return value
+
+    def euro_call(self, S, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = (np.log(S / K) + (r - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        call = (S * si.norm.cdf(d1, 0.0, 1.0) - K * np.exp(-r * T) * si.norm.cdf(d2, 0.0, 1.0))
+        return call
+
+    def euro_put(self, S, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = (np.log(S / K) + (r - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        put = (K * np.exp(-r * T) * si.norm.cdf(-d2, 0.0, 1.0) - S * si.norm.cdf(-d1, 0.0, 1.0))
+        return put
 
     def delta_call(self, S, K, T, r, sigma):
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
@@ -115,6 +167,32 @@ class Position:
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
         delta_put = si.norm.cdf(-d1, 0.0, 1.0)
         return -delta_put
+
+    def theta_call(S, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = (np.log(S / K) + (r - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        prob_density = 1 / np.sqrt(2 * np.pi) * np.exp(-d1 ** 2 * 0.5)
+        theta = (-sigma * S * prob_density) / (2 * np.sqrt(T)) - r * K * np.exp(-r * T) * si.norm.cdf(d2, 0.0, 1.0)
+        return theta
+
+    def theta_put(S, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        d2 = (np.log(S / K) + (r - 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        prob_density = 1 / np.sqrt(2 * np.pi) * np.exp(-d1 ** 2 * 0.5)
+        theta = (-sigma * S * prob_density) / (2 * np.sqrt(T)) + r * K * np.exp(-r * T) * si.norm.cdf(-d2, 0.0, 1.0)
+        return theta
+
+    def gamma(S, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        prob_density = 1 / np.sqrt(2 * np.pi) * np.exp(-d1 ** 2 * 0.5)
+        gamma = prob_density / (S * sigma * np.sqrt(T))
+        return gamma
+
+    def vega(S, S0, K, T, r, sigma):
+        d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
+        prob_density = 1 / np.sqrt(2 * np.pi) * np.exp(-d1 ** 2 * 0.5)
+        vega = S0 * prob_density * np.sqrt(T)
+        return vega
 
     def add_und(self,type, under, sym):
         if type == "Equity":
@@ -261,14 +339,12 @@ class Position:
         return position
 
     def get_port_data(self):
-        user_id = current_user.get_id()
-        user = user_id[0:7]
-        string = 'app/static/portfolios/' + str(user)
+        email = current_user.email
+        string = 'app/static/portfolios/' + str(email)
         return string
 
     def save_user_port(self, df):
-        user_id = current_user.get_id()
-        user = user_id[0:7]
-        df.to_csv(os.path.join('app/static/portfolios', user), encoding='utf-8', index=False)
+        email = current_user.email
+        df.to_csv(os.path.join('app/static/portfolios', email), encoding='utf-8', index=False)
 
 
