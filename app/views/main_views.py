@@ -37,7 +37,7 @@ def member_page():
         user_id = current_user.get_id()
         user = user_id[0:7]
         file = request.files['etradeport']
-        file = position.get_data_from_file(file)
+        file = position.get_etrade_data_from_file(file)
         file.to_csv(os.path.join('app/static/portfolios', user), encoding='utf-8', index=False)
         return render_template('main/user_page.html')
     else:
@@ -209,22 +209,22 @@ def sample2_page():
 @login_required
 # @csrf.exempt
 def new_equity_page():
-    if request.method == "GET":
-        position = Position()
-        ticker = "FSLY"
-        csv = position.get_port_data()
-        df = position.get_data_from_file(csv)
-        group = position.filter_holdings(df, ticker)
-        group = position.get_holdings(group)
-        group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
-        return render_template("main/group.html", tables=[
-            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
-                          columns=['Symbol', 'Option Underlier',
-                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-                                   'Option Delta', 'Exposure'],
-                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                      "Exposure": "{:,.0f}".format})])
-    elif request.method == "POST":
+    # if request.method == "GET":
+    #     position = Position()
+    #     ticker = "FSLY"
+    #     csv = position.get_port_data()
+    #     df = position.get_data_from_file(csv)
+    #     group = position.filter_holdings(df, ticker)
+    #     group = position.get_holdings(group)
+    #     group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
+    #     return render_template("main/group.html", tables=[
+    #         group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+    #                       columns=['Symbol', 'Option Underlier',
+    #                                'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+    #                                'Option Delta', 'Exposure'],
+    #                       formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+    #                                   "Exposure": "{:,.0f}".format})])
+    if request.method == "POST":
         position = Position()
         ticker = request.form.get('ticker')
         quantity = request.form.get("quantity")
@@ -233,10 +233,11 @@ def new_equity_page():
         df = position.get_data_from_file(csv)
         df.loc[len(df.index)] = [ticker, 'Equity', '', '', quantity, '', '']
         df.sort_values(by=['Symbol'], inplace=True)
+        position.save_user_port(df)
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, ticker)
-        data = position.check_equity(group)
+        # data = position.check_equity(group)
         group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
         vars = group.copy()
         group = position.get_group_holdings(group)
@@ -261,22 +262,22 @@ def new_equity_page():
 @login_required
 # @csrf.exempt
 def new_option_page():
-    if request.method == "GET":
-        position = Position()
-        ticker = "FSLY"
-        csv = position.get_port_data()
-        df = position.get_data_from_file(csv)
-        group = position.filter_holdings(df, ticker)
-        group = position.get_holdings(group)
-        group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
-        return render_template("main/group.html", tables=[
-            group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
-                          columns=['Symbol', 'Option Underlier',
-                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-                                   'Option Delta', 'Exposure'],
-                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                      "Exposure": "{:,.0f}".format})])
-    elif request.method == "POST":
+#     if request.method == "GET":
+#         position = Position()
+#         ticker = "FSLY"
+#         csv = position.get_port_data()
+#         df = position.get_data_from_file(csv)
+#         group = position.filter_holdings(df, ticker)
+#         group = position.get_holdings(group)
+#         group.loc["Total Exposure"] = group.sum(["Exposure"],axis =0)
+#         return render_template("main/group.html", tables=[
+#             group.to_html(header=True, index=False, na_rep="--", table_id="Portfolio",
+#                           columns=['Symbol', 'Option Underlier',
+#                                    'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+#                                    'Option Delta', 'Exposure'],
+#                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
+#                                       "Exposure": "{:,.0f}".format})])
+    if request.method == "POST":
         position = Position()
         symbol = request.form.get('symbol')
         underlier = request.form.get('underlying')
@@ -290,6 +291,7 @@ def new_option_page():
         df = position.get_data_from_file(csv)
         df.loc[len(df.index)] = [symbol, 'Option', underlier, type, quantity, strike, expiry]
         df.sort_values(by=['Symbol'], inplace=True)
+        position.save_user_port(df)
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, underlier)

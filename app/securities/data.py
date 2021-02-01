@@ -6,10 +6,16 @@ import scipy.stats as si
 from datetime import datetime
 from app.models.user_models import UserProfileForm
 from flask_user import current_user, login_required, roles_required
+import os
 
 class Position:
 
     def get_data_from_file(self, csv):
+        df = pandas.read_csv(csv, engine='python')
+        df.drop(df.filter(regex="Unnamed"), axis=1, inplace=True)
+        return df
+
+    def get_etrade_data_from_file(self, csv):
         df = pandas.read_csv(csv, engine='python', header=6, skipfooter=4)
         df.drop(df.filter(regex="Unnamed"), axis=1, inplace=True)
         return df
@@ -260,6 +266,9 @@ class Position:
         string = 'app/static/portfolios/' + str(user)
         return string
 
-    # def add_equity(self,ticker, quantity):
-    #     df.loc[len]
+    def save_user_port(self, df):
+        user_id = current_user.get_id()
+        user = user_id[0:7]
+        df.to_csv(os.path.join('app/static/portfolios', user), encoding='utf-8', index=False)
+
 
