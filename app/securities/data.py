@@ -136,12 +136,12 @@ class Position:
             value = 0
         elif option == 'CALL':
             call_value = self.euro_call(stock_px, strike, time, rate, vol)
-            position_value = self.euro_call(stock_px, strike,time, rate, avg_vol)
-            value = round((position_value-call_value) * 100 * qty)
+            position_value = self.euro_call(stock_px, strike, time, rate, avg_vol)
+            value = round((call_value - position_value) * 100 * qty)
         elif option == 'PUT':
-            put_value = self.euro_put(stock_px,strike, time, rate, vol)
-            position_value = self.euro_put(stock_px, strike, rate, avg_vol)
-            value = round((position_value-put_value) * 100 * qty)
+            put_value = self.euro_put(stock_px, strike, time, rate, vol)
+            position_value = self.euro_put(stock_px, strike, time, rate, avg_vol)
+            value = round((put_value-position_value) * 100 * qty)
         else:
             value = 0
         return value

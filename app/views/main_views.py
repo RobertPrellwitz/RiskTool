@@ -175,7 +175,7 @@ def group_page():
         vols = position.prep_for_exp(vols)
         vol_exp = position.group_vol_exp(vols)
         vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
-        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] ]
+        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
         group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
@@ -240,14 +240,19 @@ def new_equity_page():
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, ticker)
-        # data = position.check_equity(group)
+        # group = position.check_equity(group)
         group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
         vars = group.copy()
+        vols = group.copy()
         group = position.get_group_holdings(group)
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
         vars = position.prep_for_exp(vars)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        vols = position.prep_for_exp(vols)
+        vol_exp = position.group_vol_exp(vols)
+        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
+        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
         group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
@@ -256,8 +261,9 @@ def new_equity_page():
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format})
         exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
 
-        return render_template("main/group.html", tables=[group, exposure])
+        return render_template("main/group.html", tables=[group, exposure, vol_exp])
     else:
         return redirect(url_for("main/home_page.html"))
 
@@ -301,11 +307,16 @@ def new_option_page():
         group = position.check_equity(group)
         group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
         vars = group.copy()
+        vols = group.copy()
         group = position.get_group_holdings(group)
         group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
         vars = position.prep_for_exp(vars)
         total = position.group_exp(vars)
         exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        vols = position.prep_for_exp(vols)
+        vol_exp = position.group_vol_exp(vols)
+        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
+        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
         exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
         group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
                           columns=['Symbol', 'Option Underlier',
@@ -314,7 +325,8 @@ def new_option_page():
                           formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
                                       "Exposure": "{:,.0f}".format})
         exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
 
-        return render_template("main/group.html", tables=[group, exposure])
+        return render_template("main/group.html", tables=[group, exposure, vol_exp])
     else:
         return redirect(url_for("main/home_page.html"))
