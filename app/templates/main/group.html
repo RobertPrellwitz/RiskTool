@@ -73,7 +73,9 @@
  <div class="container-fluid">
 
     {% for table in tables %}
-
+            <h3>
+                 {{titles[loop.index]}}
+            </h3>
         <div class="container-fluid p-3 my-3">
             {{ table | safe }}
         </div>

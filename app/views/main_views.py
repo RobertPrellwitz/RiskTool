@@ -240,7 +240,7 @@ def new_equity_page():
         df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
                                           axis=1)
         group = position.filter_holdings(df, ticker)
-        # group = position.check_equity(group)
+        group = position.check_equity(group)
         group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
         vars = group.copy()
         vols = group.copy()
@@ -263,7 +263,7 @@ def new_equity_page():
         exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
         vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
 
-        render_template("main/group.html", tables=[group, exposure, vol_exp],
+        return render_template("main/group.html", tables=[group, exposure, vol_exp],
                         titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
         return redirect(url_for("main/home_page.html"))
@@ -328,6 +328,6 @@ def new_option_page():
         exposure = exposure.to_html(index=True, header=True, table_id="Exposure")
         vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp')
 
-        render_template("main/group.html", tables=[group, exposure, vol_exp], titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
+        return render_template("main/group.html", tables=[group, exposure, vol_exp], titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
         return redirect(url_for("main/home_page.html"))
