@@ -50,6 +50,48 @@
             </div>
 </nav>
 
+    <div class="container-fluid p3">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 50rem;">
+              <div class="card-header"> Standard CSV Instructions </div>
+              <div class="card-body">
+                <h4 class="card-title">User Portfolio file details</h4>
+                <p class="card-text">Getting your portfolio loaded is simple.  You need a csv file of your positions in the following format:<br>
+                     Header row: <br> Symbol, Type, Option Underlier,Option Type, Quantity, Strike Price, Expiration Date <br>
+                    The body is one security per row with the relevant data (obviously equities have less content!)<br>
+                     equity example:  F,Equity,--,--,2000,--,--<br>
+                     option example:  F Feb 05 '21 $12 Call,Option,F,CALL,30,12,2/5/2021</p>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card text-white bg-primary mb-4" style="max-width: 50rem;">
+              <div class="card-header">Etrade Instructions</div>
+              <div class="card-body">
+                <h4 class="card-title">Etrade File Details </h4>
+                <p class="card-text">Etrade users simply need to download a csv file from Etrade with the fields in the order shown below.  Thats it!
+                                        We will take care of the rest! <br>  Fields Required: <br>
+                                         Symbol, Type, Option Underlier,Option Type, Quantity, Strike Price, Expiration Date </p>
+              </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card text-white bg-info mb-3" style="max-width: 20rem;">
+              <div class="card-header">Attention</div>
+              <div class="card-body">
+                <h4 class="card-title">Please Check Back</h4>
+                <p class="card-text">We intend to add other retail broker support regularly.  Let us know your favorite so we
+                                     know who to focus on and check back often to see if we have added yours!</p>
+              </div>
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+
 {% endblock %}
 
 

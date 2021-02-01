@@ -15,6 +15,10 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates')
 def home_page():
     return render_template('main/home_page.html')
 
+@main_blueprint.route('/about')
+def about_page():
+    return render_template('main/about.html')
+
 
 @main_blueprint.route('/login', methods=['GET', 'POST'])
 def sign_in_page():
