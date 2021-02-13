@@ -225,34 +225,6 @@ def new_equity_page():
         group, deltas, vols = position.group_process(df, ticker)
         vol_exp = position.vols_process(vols)
         exposure = position.delta_process(deltas)
-        # df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
-        #                                   axis=1)
-        # group = position.filter_holdings(df, ticker)
-        # group = position.check_equity(group)
-        # group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
-        # vars = group.copy()
-        # vols = group.copy()
-        # group = position.get_group_holdings(group)
-        # group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
-        # vars = position.prep_for_exp(vars)
-        # total = position.group_exp(vars)
-        # exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
-        # vols = position.prep_for_exp(vols)
-        # vol_exp = position.group_vol_exp(vols)
-        # vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
-        # vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
-        # exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
-        # group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
-        #                   columns=['Symbol', 'Option Underlier',
-        #                            'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-        #                            'Option Delta', 'Exposure'],
-        #                   formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-        #                               "Exposure": "{:,.0f}".format})
-        # exposure = exposure.to_html(index=True, header=True, table_id="Exposure",
-        #                             formatters={'Quantity': '{:.0f}'.format})
-        # vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
-        #                           formatters={'Quantity': '{:.0f}'.format})
-
         return render_template("main/group.html", tables=[group, exposure, vol_exp],
                         titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
@@ -293,33 +265,9 @@ def new_option_page():
         df.loc[len(df.index)] = [symbol, 'Option', underlier, type, quantity, strike, expiry]
         df.sort_values(by=['Symbol'], inplace=True)
         position.save_user_port(df)
-        df["Option Underlier"] = df.apply(lambda x: position.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
-                                          axis=1)
-        group = position.filter_holdings(df, underlier)
-        group = position.check_equity(group)
-        group['Expiration Date'] = group.apply(lambda x: position.date(x['Expiration Date'], x['Type']), axis=1)
-        vars = group.copy()
-        vols = group.copy()
-        group = position.get_group_holdings(group)
-        group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
-        vars = position.prep_for_exp(vars)
-        total = position.group_exp(vars)
-        exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
-        vols = position.prep_for_exp(vols)
-        vol_exp = position.group_vol_exp(vols)
-        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
-        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
-        exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
-        group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
-                          columns=['Symbol', 'Option Underlier',
-                                   'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
-                                   'Option Delta', 'Exposure'],
-                          formatters={"Market Price": "${:,.2f}".format, "Option Delta": "{:.1%}".format,
-                                      "Exposure": "{:,.0f}".format})
-        exposure = exposure.to_html(index=True, header=True, table_id="Exposure",
-                                    formatters={'Quantity': '{:.0f}'.format})
-        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
-                                  formatters={'Quantity': '{:.0f}'.format})
+        group, deltas, vols = position.group_process(df, underlier)
+        vol_exp = position.vols_process(vols)
+        exposure = position.delta_process(deltas)
 
         return render_template("main/group.html", tables=[group, exposure, vol_exp], titles=['', 'Group Holdings', 'Equity Exposure', 'Volatility Exposure'])
     else:
