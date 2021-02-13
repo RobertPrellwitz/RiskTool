@@ -1,4 +1,3 @@
-from securities.securities import Equity
 from flask import render_template, current_app, request, redirect, url_for
 import pandas
 
