@@ -79,6 +79,44 @@ class Position:
                              x['Year'], x['Strike Price'])), axis=1)
         return df
 
+    def group_process(self,df, ticker):
+        df["Option Underlier"] = df.apply(lambda x: self.add_und(x["Type"], x["Option Underlier"], x["Symbol"]),
+                                          axis=1)
+        group = self.filter_holdings(df, ticker)
+        group = self.check_equity(group)
+        group['Expiration Date'] = group.apply(lambda x: self.date(x['Expiration Date'], x['Type']), axis=1)
+        deltas = group.copy()
+        vols = group.copy()
+        group = self.get_group_holdings(group)
+        group.loc["Total Exposure"] = pandas.Series(group[['Exposure']].sum(), index=['Exposure'])
+        group = group.to_html(header=True, index=True, na_rep="--", table_id="Portfolio",
+                              columns=['Symbol', 'Option Underlier',
+                                       'Option Type', 'Quantity', 'Strike Price', 'Expiration Date', 'Market Price',
+                                       'Option Delta', 'Exposure'],
+                              formatters={'Quantity': '{:.0f}'.format, "Market Price": "${:,.2f}".format,
+                                          "Option Delta": "{:.1%}".format,
+                                          "Exposure": "{:,.0f}".format})
+        return (group, deltas, vols)
+
+    def vols_process(self, vols):
+        vols = self.prep_for_exp(vols)
+        vol_exp = self.group_vol_exp(vols)
+        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
+        vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
+                                  formatters={'Quantity': '{:.0f}'.format})
+        return vol_exp
+
+    def delta_process(self, vars):
+        vars = self.prep_for_exp(vars)
+        total = self.group_exp(vars)
+        exposure = total.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
+        exposure.loc["Total Exposure"] = exposure.sum(numeric_only=True, axis=0)
+        exposure = exposure.to_html(index=True, header=True, table_id="Exposure",
+                                    formatters={'Quantity': '{:.0f}'.format})
+        return exposure
+
+
     def group_exp(self, df):
         ticker = df.iloc[0,2]
         stock_px = float(Stock(ticker).price)
