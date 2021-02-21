@@ -101,9 +101,12 @@ class Position:
     def vols_process(self, vols):
         vols = self.prep_for_exp(vols)
         vol_exp = self.group_vol_exp(vols)
-        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
+        # vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True)
         vol_exp = vol_exp.iloc[:, [0, 1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]
-        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
+        vol_exp.loc['Totals'] = vol_exp.sum(numeric_only=True, axis=0)
+        # vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp', float_format='${:.0f}'.format,
+        #                           formatters={'Quantity': '{:.0f}'.format})
+        vol_exp = vol_exp.to_html(index=True, header=True, table_id='vol_exp',
                                   formatters={'Quantity': '{:.0f}'.format})
         return vol_exp
 
